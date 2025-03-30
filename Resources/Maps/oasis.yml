@@ -17082,8 +17082,6 @@ entities:
       pos: -13.5,-46.5
       parent: 2
     - type: DeviceNetwork
-      configurators:
-      - invalid
       deviceLists:
       - 18690
       - 21504
@@ -17093,8 +17091,6 @@ entities:
       pos: 30.5,1.5
       parent: 21002
     - type: DeviceNetwork
-      configurators:
-      - invalid
       deviceLists:
       - 21504
 - proto: AirTank
@@ -131448,8 +131444,6 @@ entities:
       pos: 29.5,1.5
       parent: 21002
     - type: DeviceNetwork
-      configurators:
-      - invalid
       deviceLists:
       - 21504
     - type: AtmosPipeColor
@@ -131461,8 +131455,6 @@ entities:
       pos: 29.5,3.5
       parent: 21002
     - type: DeviceNetwork
-      configurators:
-      - invalid
       deviceLists:
       - 21504
     - type: AtmosPipeColor
