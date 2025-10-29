@@ -11,7 +11,7 @@ import time
 from pathlib import Path
 from typing import List
 
-SOLUTION_PATH = Path("..") / "SpaceStation14.sln"
+SOLUTION_PATH = Path("..") / "DontGetStabbed.sln"
 # If this doesn't match the saved version we overwrite them all.
 CURRENT_HOOKS_VERSION = "4"
 QUIET = len(sys.argv) == 2 and sys.argv[1] == "--quiet"
@@ -117,7 +117,22 @@ def check_for_zip_download():
         time.sleep(30)
         exit(1)
 
+def refactor_to_dontgetstabbed():
+    CVARS_PATH = Path("..") / "RobustToolBox/Robust.Shared/CVars.cs"
+
+    # Read in the file
+    with open(CVARS_PATH, 'r') as file:
+      filedata = file.read()
+
+    # Replace the target string
+    filedata = filedata.replace('SpaceStation14.sln', 'DontGetStabbed.sln')
+
+    # Write the file out again
+    with open(CVARS_PATH, 'w') as file:
+      file.write(filedata)
+
 if __name__ == '__main__':
     check_for_zip_download()
     install_hooks()
     update_submodules()
+    refactor_to_dontgetstabbed()
