@@ -54,7 +54,10 @@ def update_submodules():
 
     # If the status doesn't match, force VS to reload the solution.
     # status = run_command(["git", "submodule", "status"], capture=True)
-    run_command(["git", "submodule", "update", "--init", "--recursive"])
+    
+    result = subprocess.run(["git", "submodule", "update", "--init", "--recursive"])
+    
+    # run_command(["git", "submodule", "update", "--init", "--recursive"])
     # status2 = run_command(["git", "submodule", "status"], capture=True)
 
     # Something changed.
@@ -118,6 +121,9 @@ def check_for_zip_download():
         exit(1)
 
 def refactor_to_dontgetstabbed():
+
+    print("refactoring CVars")
+    
     CVARS_PATH = Path("..") / "RobustToolBox/Robust.Shared/CVars.cs"
 
     # Read in the file
