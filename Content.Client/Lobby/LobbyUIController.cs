@@ -118,11 +118,6 @@ public sealed class LobbyUIController : UIController, IOnStateEntered<LobbyState
                 _profileEditor.RefreshLoadouts();
             }
 
-            if (obj.WasModified<SpeciesPrototype>())
-            {
-                _profileEditor.RefreshSpecies();
-            }
-
             if (obj.WasModified<TraitPrototype>())
             {
                 _profileEditor.RefreshTraits();
