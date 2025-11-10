@@ -468,6 +468,7 @@ entities:
           Oxygen: 21.82478
           Nitrogen: 82.10312
     - type: RadiationGridResistance
+      resistance: 1.0 #block all radiation
 - proto: Bed
   entities:
   - uid: 21
