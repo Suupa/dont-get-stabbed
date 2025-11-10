@@ -1,16 +1,16 @@
 - type: gameMap
-  id: Z11
-  mapName: Z11
-  mapPath: /Maps/Test/z11.yml
+  id: TestPrison
+  mapName: TestPrison
+  mapPath: /Maps/Test/testprison.yml
   minPlayers: 0
   maxPlayers: 30
 
   stations:
-    Z11:
+    TestPrison:
       stationProto: StandardNanotrasenStation
       components:
       - type: StationNameSetup
-        mapNameTemplate: 'Z11'
+        mapNameTemplate: 'TestPrison'
       - type: StationJobs
         availableJobs:
           Passenger: [ -1, -1 ]

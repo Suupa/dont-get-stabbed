@@ -594,3 +594,10 @@
     - !type:BiomeTileLayer
       threshold: -1.0
       tile: FloorAsteroidSand
+# Simple Desert
+- type: biomeTemplate
+  id: SimpleDesert
+  layers:
+  - !type:BiomeTileLayer
+    threshold: -1
+    tile: FloorAsteroidSand
