@@ -221,15 +221,16 @@ namespace Content.Client.Lobby.UI
 
             #endregion Gender
 
+            /* not needed because only humans possible
             RefreshSpecies();
 
-            SpeciesButton.OnItemSelected += args =>
+             SpeciesButton.OnItemSelected += args =>
             {
                 SpeciesButton.SelectId(args.Id);
                 SetSpecies(_species[args.Id].ID);
                 UpdateHairPickers();
                 OnSkinColorOnValueChanged();
-            };
+            }; */
 
             #region Skin
 
@@ -449,9 +450,6 @@ namespace Content.Client.Lobby.UI
                 ReloadPreview();
             };
 
-            SpeciesInfoButton.OnPressed += OnSpeciesInfoButtonPressed;
-
-            UpdateSpeciesGuidebookIcon();
             IsDirty = false;
         }
 
@@ -594,39 +592,6 @@ namespace Content.Client.Lobby.UI
                     }
 
                     TraitsList.AddChild(selector);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Refreshes the species selector.
-        /// </summary>
-        public void RefreshSpecies()
-        {
-            SpeciesButton.Clear();
-            _species.Clear();
-
-            _species.AddRange(_prototypeManager.EnumeratePrototypes<SpeciesPrototype>().Where(o => o.RoundStart));
-            _species.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.CurrentCultureIgnoreCase));
-            var speciesIds = _species.Select(o => o.ID).ToList();
-
-            for (var i = 0; i < _species.Count; i++)
-            {
-                var name = Loc.GetString(_species[i].Name);
-                SpeciesButton.AddItem(name, i);
-
-                if (Profile?.Species.Equals(_species[i].ID) == true)
-                {
-                    SpeciesButton.SelectId(i);
-                }
-            }
-
-            // If our species isn't available then reset it to default.
-            if (Profile != null)
-            {
-                if (!speciesIds.Contains(Profile.Species))
-                {
-                    SetSpecies(SharedHumanoidAppearanceSystem.DefaultSpecies);
                 }
             }
         }
@@ -775,7 +740,6 @@ namespace Content.Client.Lobby.UI
             RefreshAntags();
             RefreshJobs();
             RefreshLoadouts();
-            RefreshSpecies();
             RefreshTraits();
             RefreshFlavorText();
             ReloadPreview();
@@ -799,27 +763,6 @@ namespace Content.Client.Lobby.UI
 
             // Check and set the dirty flag to enable the save/reset buttons as appropriate.
             SetDirty();
-        }
-
-        private void OnSpeciesInfoButtonPressed(BaseButton.ButtonEventArgs args)
-        {
-            // TODO GUIDEBOOK
-            // make the species guide book a field on the species prototype.
-            // I.e., do what jobs/antags do.
-
-            var guidebookController = UserInterfaceManager.GetUIController<GuidebookUIController>();
-            var species = Profile?.Species ?? SharedHumanoidAppearanceSystem.DefaultSpecies;
-            var page = DefaultSpeciesGuidebook;
-            if (_prototypeManager.HasIndex<GuideEntryPrototype>(species))
-                page = new ProtoId<GuideEntryPrototype>(species.Id); // Gross. See above todo comment.
-
-            if (_prototypeManager.Resolve(DefaultSpeciesGuidebook, out var guideRoot))
-            {
-                var dict = new Dictionary<ProtoId<GuideEntryPrototype>, GuideEntry>();
-                dict.Add(DefaultSpeciesGuidebook, guideRoot);
-                //TODO: Don't close the guidebook if its already open, just go to the correct page
-                guidebookController.OpenGuidebook(dict, includeChildren:true, selected: page);
-            }
         }
 
         /// <summary>
@@ -1197,7 +1140,6 @@ namespace Content.Client.Lobby.UI
             // In case there's species restrictions for loadouts
             RefreshLoadouts();
             UpdateSexControls(); // update sex for new species
-            UpdateSpeciesGuidebookIcon();
             ReloadPreview();
         }
 
@@ -1330,25 +1272,6 @@ namespace Content.Client.Lobby.UI
                     break;
                 }
             }
-        }
-
-        public void UpdateSpeciesGuidebookIcon()
-        {
-            SpeciesInfoButton.StyleClasses.Clear();
-
-            var species = Profile?.Species;
-            if (species is null)
-                return;
-
-            if (!_prototypeManager.Resolve<SpeciesPrototype>(species, out var speciesProto))
-                return;
-
-            // Don't display the info button if no guide entry is found
-            if (!_prototypeManager.HasIndex<GuideEntryPrototype>(species))
-                return;
-
-            const string style = "SpeciesInfoDefault";
-            SpeciesInfoButton.StyleIdentifier = style;
         }
 
         private void UpdateMarkings()
