@@ -8,3 +8,4 @@ department-Security-description = Keep the peace around the station.
 department-Science-description = Research artifacts and anomalies to invent new equipment for the station
 department-Silicon-description = Obey your laws and serve the crew.
 department-Specific-description = Jobs that not all stations have.
+department-Prisoner-description = Do your time and don't get stabbed!
