@@ -1,91 +1,12 @@
 - type: department
-  id: Cargo
-  name: department-Cargo
-  description: department-Cargo-description
-  color: "#A46106"
-  roles:
-  - CargoTechnician
-  - Quartermaster
-  - SalvageSpecialist
-
-- type: department
   id: Civilian
   name: department-Civilian
   description: department-Civilian-description
   color: "#9FED58"
   weight: -10
   roles:
-  - Bartender
-  - Botanist
-  - Boxer
   - Chaplain
-  - Chef
-  - Clown
-  - HeadOfPersonnel
-  - Janitor
   - Lawyer
-  - Librarian
-  - Mime
-  - Musician
-  - Passenger
-  - Reporter
-  - Visitor
-  - Zookeeper
-  - ServiceWorker
-
-- type: department
-  id: CentralCommand
-  name: department-CentralCommand
-  description: department-CentralCommand-description
-  color: "#0c344d"
-  roles:
-  - CentralCommandOfficial
-  - CBURN
-  - ERTLeader
-  - ERTChaplain
-  - ERTJanitor
-  - ERTMedical
-  - ERTSecurity
-  - ERTEngineer
-  - DeathSquad
-  editorHidden: true
-  weight: 120
-
-- type: department
-  id: Command
-  name: department-Command
-  description: department-Command-description
-  color: "#334E6D"
-  roles:
-  - Captain
-  - ChiefEngineer
-  - ChiefMedicalOfficer
-  - HeadOfPersonnel
-  - HeadOfSecurity
-  - ResearchDirector
-  - Quartermaster
-  - CentralCommandOfficial
-  - CBURN
-  - ERTLeader
-  - ERTChaplain
-  - ERTJanitor
-  - ERTMedical
-  - ERTSecurity
-  - ERTEngineer
-  - DeathSquad
-  primary: false
-  weight: 100
-
-- type: department
-  id: Engineering
-  name: department-Engineering
-  description: department-Engineering-description
-  color: "#EFB341"
-  roles:
-  - AtmosphericTechnician
-  - ChiefEngineer
-  - StationEngineer
-  - TechnicalAssistant
 
 - type: department
   id: Medical
@@ -93,57 +14,19 @@
   description: department-Medical-description
   color: "#52B4E9"
   roles:
-  - Chemist
-  - ChiefMedicalOfficer
   - MedicalDoctor
   - MedicalIntern
   - Psychologist
   - Paramedic
 
-- type: department
-  id: Security
-  name: department-Security
-  description: department-Security-description
-  color: "#DE3A3A"
-  weight: 20
-  roles:
-  - HeadOfSecurity
-  - SecurityCadet
-  - SecurityOfficer
-  - Detective
-  - Warden
-
-- type: department
-  id: Science
-  name: department-Science
-  description: department-Science-description
-  color: "#D381C9"
-  roles:
-  - ResearchDirector
-  - Scientist
-  - ResearchAssistant
-
-- type: department
-  id: Silicon
-  name: department-Silicon
-  description: department-Silicon-description
-  color: "#D381C9"
-  roles:
-  - Borg
-  - StationAi
-
-- type: department
-  id: Specific
-  name: department-Specific
-  description: department-Specific-description
-  color: "#9FED58"
-  weight: 10
-  roles:
-  - Boxer
-  - Reporter
-  - Zookeeper
-  - Psychologist
-  primary: false
+#TODO camera operator
+#- type: department
+#  id: Silicon
+#  name: department-Silicon
+#  description: department-Silicon-description
+#  color: "#D381C9"
+# roles:
+# - StationAi
 
 - type: department
   id: Prisoner
@@ -152,3 +35,15 @@
   color: "#a46d06"
   roles:
   - Inmate
+  #TODO fresh blood/fish
+  #TODO junkie
+
+- type: department
+  id: Guard
+  name: department-Guard
+  description: department-Guard-description
+  color: "#107e8f"
+  roles:
+  - CorrectionalOfficer
+  #TODO warden
+  #TODO - cadet (find better name)
