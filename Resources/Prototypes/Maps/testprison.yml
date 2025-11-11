@@ -13,5 +13,9 @@
         mapNameTemplate: 'TestPrison'
       - type: StationJobs
         availableJobs:
-          Passenger: [ -1, -1 ]
+          Lawyer: [ 1, 1 ]
+          Chaplain: [ 1, 1 ]
+          Psychologist: [ 1, 1 ]
+          MedicalDoctor: [ -1, -1 ]
           Inmate: [ -1, -1 ]
+          CorrectionalOfficer: [ -1, -1 ]

@@ -9,5 +9,6 @@ department-Science = Science
 department-Silicon = Silicon
 department-Specific = Station specific
 department-Prisoner = Prisoner
+department-Guard = Guard
 
 department-Unknown = Unknown
