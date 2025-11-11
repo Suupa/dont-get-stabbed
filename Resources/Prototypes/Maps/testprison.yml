@@ -14,3 +14,4 @@
       - type: StationJobs
         availableJobs:
           Passenger: [ -1, -1 ]
+          Inmate: [ -1, -1 ]
