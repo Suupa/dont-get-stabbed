@@ -51,6 +51,7 @@ job-name-zookeeper = Zookeeper
 job-name-visitor = Visitor
 job-name-cluwne = Cluwne
 job-name-inmate = Inmate
+job-name-correctional-officer = Correctional Officer
 
 # unused jobs
 # these are required for the agent ID job icon tooltips

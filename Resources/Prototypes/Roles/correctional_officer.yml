@@ -1,0 +1,20 @@
+- type: job
+  id: CorrectionalOfficer
+  name: job-name-correctional-officer
+  description: job-description-correctional-officer
+  playTimeTracker: JobCorrectionalOfficer
+  canBeAntag: false
+  startingGear: CorrectionalOfficerGear
+  icon: JobIconWarden
+  setPreference: true
+  overrideConsoleVisibility: true
+  access:
+  - Maintenance
+  extendedAccess:
+  - External
+- type: startingGear
+  id: CorrectionalOfficerGear
+  equipment:
+    jumpsuit: ClothingUniformJumpsuitSecBlue
+    shoes: ClothingShoesColorBrown
+    head: ClothingHeadHatCommandSoft
