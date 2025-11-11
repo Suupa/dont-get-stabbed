@@ -144,3 +144,11 @@
   - Zookeeper
   - Psychologist
   primary: false
+
+- type: department
+  id: Prisoner
+  name: department-Prisoner
+  description: department-Prisoner-description
+  color: "#a46d06"
+  roles:
+  - Inmate

@@ -1,0 +1,19 @@
+- type: job
+  id: Inmate
+  name: job-name-inmate
+  description: job-description-inmate
+  playTimeTracker: JobInmate
+  canBeAntag: false
+  startingGear: InmateGear
+  icon: JobIconPrisoner
+  setPreference: true
+  overrideConsoleVisibility: true
+  access:
+  - Maintenance
+  extendedAccess:
+  - External
+- type: startingGear
+  id: InmateGear
+  equipment:
+    jumpsuit: ClothingUniformJumpsuitPrisoner
+    shoes: ClothingShoesColorOrange
