@@ -9,12 +9,13 @@
   setPreference: true
   overrideConsoleVisibility: true
   access:
-  - Maintenance
+  - CO
   extendedAccess:
   - External
 - type: startingGear
   id: CorrectionalOfficerGear
   equipment:
+    id: GuardPDA
     jumpsuit: ClothingUniformJumpsuitSecBlue
     shoes: ClothingShoesColorBrown
     head: ClothingHeadHatCommandSoft
