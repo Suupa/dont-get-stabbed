@@ -214,6 +214,24 @@
 
 - type: entity
   parent: IDCardStandard
+  id: GuardIDCard
+  name: guard ID card
+  components:
+  - type: Sprite
+    layers:
+    - state: default
+    - state: stripe_top
+      color: *color-engineering-top
+    - state: stripe_bottom
+      color: *color-engineering-bottom
+    - sprite: *icon-rsi
+      offset: *icon-offset
+      state: StationEngineer
+  - type: PresetIdCard
+    job: CorrectionalOfficer
+
+- type: entity
+  parent: IDCardStandard
   id: EngineeringIDCard
   name: engineer ID card
   components:

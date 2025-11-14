@@ -721,6 +721,25 @@
     state: pda-engineer
 
 - type: entity
+  parent: BasePDA
+  id: GuardPDA
+  name: guard PDA
+  description: Rugged and well-worn.
+  components:
+  - type: Pda
+    id: GuardIDCard
+  - type: Appearance
+    appearanceDataInit:
+      enum.PdaVisuals.PdaType:
+        !type:String
+        pda-engineer
+  - type: PdaBorderColor
+    borderColor: "#949137"
+    accentVColor: "#A32D26"
+  - type: Icon
+    state: pda-engineer
+
+- type: entity
   parent: BaseMedicalPDA
   id: CMOPDA
   name: chief medical officer PDA
