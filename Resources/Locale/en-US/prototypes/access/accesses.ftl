@@ -14,6 +14,7 @@ id-card-access-level-genpop-leave = Leave Genpop
 
 id-card-access-level-chief-engineer = Chief Engineer
 id-card-access-level-engineering = Engineering
+id-card-access-level-co = Correctional Officer
 id-card-access-level-atmospherics = Atmospherics
 
 id-card-access-level-research-director = Research Director
