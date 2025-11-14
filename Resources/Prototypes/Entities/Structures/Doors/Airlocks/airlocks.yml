@@ -10,6 +10,16 @@
 
 - type: entity
   parent: Airlock
+  id: AirlockGuard
+  suffix: Guard
+  components:
+  - type: Sprite
+    sprite: Structures/Doors/Airlocks/Standard/guard.rsi
+  - type: Wires
+    layoutId: AirlockGuard
+
+- type: entity
+  parent: Airlock
   id: AirlockEngineering
   suffix: Engineering
   components:
@@ -190,6 +200,16 @@
     sprite: Structures/Doors/Airlocks/Standard/hatch_syndicate.rsi
 
 # Glass
+- type: entity
+  parent: AirlockGlass
+  id: AirlockGuardGlass
+  suffix: Guard
+  components:
+  - type: Sprite
+    sprite: Structures/Doors/Airlocks/Glass/guard.rsi
+  - type: Wires
+    layoutId: AirlockGuard
+
 - type: entity
   parent: AirlockGlass
   id: AirlockEngineeringGlass

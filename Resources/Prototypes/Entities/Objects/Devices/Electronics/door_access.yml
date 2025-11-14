@@ -162,6 +162,15 @@
   - type: AccessReader
     access: [["Engineering"]]
 
+# Guard
+- type: entity
+  parent: DoorElectronics
+  id: DoorElectronicsGuard
+  suffix: Guard, Locked
+  components:
+  - type: AccessReader
+    access: [["CO"]]
+
 # Science
 - type: entity
   parent: DoorElectronics

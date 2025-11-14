@@ -1,0 +1,8 @@
+- type: accessLevel
+  id: CO
+  name: id-card-access-level-co
+
+- type: accessGroup
+  id: Guard
+  tags:
+  - CO

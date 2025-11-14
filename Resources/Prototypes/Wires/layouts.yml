@@ -25,6 +25,10 @@
 
 - type: wireLayout
   parent: Airlock
+  id: AirlockGuard
+
+- type: wireLayout
+  parent: Airlock
   id: AirlockEngineering
 
 - type: wireLayout
