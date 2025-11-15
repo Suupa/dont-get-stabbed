@@ -104,8 +104,8 @@
 - type: entity
   parent: BaseSubdermalImplant
   id: StorageImplant
-  name: storage implant
-  description: This implant grants hidden storage within a person's body using bluespace technology.
+  name: keister
+  description: The tried and true method of hiding stuff in prison.
   categories: [ HideSpawnMenu ]
   components:
     - type: StorageImplant
@@ -116,10 +116,7 @@
         - Hands # no use giving a mouse a storage implant, but a monkey is another story...
     - type: Storage
       grid:
-      - 0,0,0,1
-      - 1,0,1,0
-      - 1,2,1,2
-      - 2,1,2,2
+      - 0,0,0,1 #x: 0->0, y: 0->1 so two blocks stacked vertically
     - type: ContainerContainer
       containers:
         storagebase: !type:Container

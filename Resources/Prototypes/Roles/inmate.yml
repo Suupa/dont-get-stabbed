@@ -12,6 +12,9 @@
   - Maintenance
   extendedAccess:
   - External
+  special:
+  - !type:AddImplantSpecial
+    implants: [ StorageImplant ]
 - type: startingGear
   id: InmateGear
   equipment:
