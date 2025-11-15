@@ -96,7 +96,7 @@
     itemIconStyle: BigAction
     priority: -20
     icon:
-      sprite: Clothing/Back/Backpacks/backpack.rsi
+      sprite: Interface/keister.rsi
       state: icon
     useDelay: 1
   - type: InstantAction
