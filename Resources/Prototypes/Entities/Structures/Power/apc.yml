@@ -95,10 +95,10 @@
     graph: APC
     node: apc
   - type: PowerNetworkBattery
-    maxSupply: 10000
-    maxChargeRate: 5000
-    supplyRampTolerance: 1000
-    supplyRampRate: 500
+    maxSupply: 30000
+    maxChargeRate: 30000
+    supplyRampTolerance: 50000
+    supplyRampRate: 3000
   - type: WallMount
   - type: WiresPanel
   - type: Wires
@@ -235,6 +235,15 @@
   - type: Battery
     maxCharge: 200000
     startingCharge: 200000
+
+- type: entity
+  parent: BaseAPC
+  id: APCRecharging
+  suffix: z11. AutoRecharge
+  components:
+  - type: BatterySelfRecharger
+    autoRechargeRate: 50000
+    autoRecharge: True
 
 - type: entity
   parent: BaseAPC
