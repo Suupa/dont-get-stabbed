@@ -71,6 +71,15 @@
 
 - type: entity
   parent: SurveillanceCameraRouterBase
+  id: SurveillanceCameraRouterGuard
+  name: guard camera router
+  suffix: Guard
+  components:
+  - type: SurveillanceCameraRouter
+    subnetFrequency: SurveillanceCameraGuard
+
+- type: entity
+  parent: SurveillanceCameraRouterBase
   id: SurveillanceCameraRouterSecurity
   name: security camera router
   suffix: Security
