@@ -134,6 +134,19 @@
 
 - type: entity
   parent: SurveillanceCameraBase
+  id: SurveillanceCameraGuard
+  name: camera
+  suffix: Guard
+  components:
+  - type: DeviceNetwork
+    deviceNetId: Wired
+    receiveFrequencyId: SurveillanceCameraGuard
+    transmitFrequencyId: SurveillanceCamera
+  - type: SurveillanceCamera
+    networkSet: true
+
+- type: entity
+  parent: SurveillanceCameraBase
   id: SurveillanceCameraSecurity
   name: camera
   suffix: Security
