@@ -19,6 +19,11 @@
   frequency: 1931
 
 - type: deviceFrequency
+  id: SurveillanceCameraGuard
+  name: device-frequency-prototype-name-surveillance-camera-guard
+  frequency: 1927
+
+- type: deviceFrequency
   id: SurveillanceCameraSecurity
   name: device-frequency-prototype-name-surveillance-camera-security
   frequency: 1932
@@ -98,7 +103,7 @@
   id: Turret
   name: device-frequency-prototype-name-turret
   frequency: 2152
-  
+
 # AI turret controllers send data to their turrets on this frequency
 - type: deviceFrequency
   id: TurretControlAI
