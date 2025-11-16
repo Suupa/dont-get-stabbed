@@ -19,15 +19,6 @@
   - Psychologist
   - Paramedic
 
-#TODO camera operator
-#- type: department
-#  id: Silicon
-#  name: department-Silicon
-#  description: department-Silicon-description
-#  color: "#D381C9"
-# roles:
-# - StationAi
-
 - type: department
   id: Prisoner
   name: department-Prisoner
@@ -47,3 +38,113 @@
   - CorrectionalOfficer
   #TODO warden
   #TODO - cadet (find better name)
+
+#TODO remove everything below (but breaks some stuff when you do, like rightclicking equiped clothes)
+#TODO camera operator
+- type: department
+  id: Silicon
+  name: department-Silicon
+  description: department-Silicon-description
+  color: "#D381C9"
+  roles:
+  - StationAi
+
+- type: department
+  id: Cargo
+  name: department-Cargo
+  description: department-Cargo-description
+  color: "#A46106"
+  roles:
+  - CargoTechnician
+  - Quartermaster
+  - SalvageSpecialist
+
+- type: department
+  id: CentralCommand
+  name: department-CentralCommand
+  description: department-CentralCommand-description
+  color: "#0c344d"
+  roles:
+  - CentralCommandOfficial
+  - CBURN
+  - ERTLeader
+  - ERTChaplain
+  - ERTJanitor
+  - ERTMedical
+  - ERTSecurity
+  - ERTEngineer
+  - DeathSquad
+  editorHidden: true
+  weight: 120
+
+- type: department
+  id: Command
+  name: department-Command
+  description: department-Command-description
+  color: "#334E6D"
+  roles:
+  - Captain
+  - ChiefEngineer
+  - ChiefMedicalOfficer
+  - HeadOfPersonnel
+  - HeadOfSecurity
+  - ResearchDirector
+  - Quartermaster
+  - CentralCommandOfficial
+  - CBURN
+  - ERTLeader
+  - ERTChaplain
+  - ERTJanitor
+  - ERTMedical
+  - ERTSecurity
+  - ERTEngineer
+  - DeathSquad
+  primary: false
+  weight: 100
+
+- type: department
+  id: Engineering
+  name: department-Engineering
+  description: department-Engineering-description
+  color: "#EFB341"
+  roles:
+  - AtmosphericTechnician
+  - ChiefEngineer
+  - StationEngineer
+  - TechnicalAssistant
+
+- type: department
+  id: Security
+  name: department-Security
+  description: department-Security-description
+  color: "#DE3A3A"
+  weight: 20
+  roles:
+  - HeadOfSecurity
+  - SecurityCadet
+  - SecurityOfficer
+  - Detective
+  - Warden
+
+- type: department
+  id: Science
+  name: department-Science
+  description: department-Science-description
+  color: "#D381C9"
+  roles:
+  - ResearchDirector
+  - Scientist
+  - ResearchAssistant
+
+- type: department
+  id: Specific
+  name: department-Specific
+  description: department-Specific-description
+  color: "#9FED58"
+  weight: 10
+  roles:
+  - Boxer
+  - Reporter
+  - Zookeeper
+  - Psychologist
+  primary: false
