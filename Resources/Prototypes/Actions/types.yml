@@ -89,8 +89,8 @@
 - type: entity
   parent: BaseAction
   id: ActionOpenStorageImplant
-  name: Toggle Storage Implant
-  description: Opens or closes the storage implant embedded under your skin
+  name: Keister
+  description: Hide something up your butt.
   components:
   - type: Action
     itemIconStyle: BigAction
