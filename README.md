@@ -4,7 +4,7 @@
 
 *Don't Get Stabbed* is a mechanically deep Multiplayer Role Playing Game that simulates a giant prison complex filled with real people.  To give a general idea of what the game has to offer, here are some random examples of roles the player can take on*:
 - a hardened criminal shot caller who vies for power against rival gangs ⬜ <!--✅-->
-- a no-nonsense Correctional Officer who tries to keep his inmates in line ⬜
+- a no-nonsense Correctional Officer who tries to keep his inmates in line ✅
 - a Confidential Informant who tries to balance his standing with both the gangs and the COs to fuel his drug addiction ⬜
 - a Chaplain trying to save some souls among the damned ⬜
 - a psychologist trying to decrease tensions in genpop with inmate group sessions ⬜
@@ -14,7 +14,7 @@
 
 And here are some random flavor examples of things you are able to do*:
 
-- keister (hide in your ass) a shiv (prisonmade knives) ⬜
+- keister (hide in your ass) a shiv (prison made knife) ✅
 - discipline a new inmate for accidentally stepping into another car's (faction) territory ⬜
 - charm a CO until he gives you a job in the mail room ⬜
 - pass kites (written messages) around from cell to cell, but be careful who might intercept them! ⬜
