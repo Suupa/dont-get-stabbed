@@ -90,4 +90,22 @@ namespace Content.Shared.Strip.Components
 
         public override DoAfterEvent Clone() => this;
     }
+
+    /// <summary>
+    ///     Organizes the behavior of DoAfters for Cavity search.
+    /// </summary>
+    [Serializable, NetSerializable]
+    public sealed partial class CavitySearchDoAfterEvent : SimpleDoAfterEvent
+    {
+        /*public readonly EntityUid User;
+        public readonly bool InventoryOrHand;
+        public readonly Entity<StrippableComponent> Target;*/
+        public CavitySearchDoAfterEvent(EntityUid user, Entity<StrippableComponent> target)
+        {
+            /*User = user;
+            Target = target;*/
+        }
+
+        public override DoAfterEvent Clone() => this;
+    }
 }
