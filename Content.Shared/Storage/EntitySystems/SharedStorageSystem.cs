@@ -166,6 +166,9 @@ public abstract class SharedStorageSystem : EntitySystem
         SubscribeAllEvent<StorageInsertItemIntoLocationEvent>(OnInsertItemIntoLocation);
         SubscribeAllEvent<StorageSaveItemLocationEvent>(OnSaveItemLocation);
 
+        //Let storage override UI range checks (e.g. for storage implants).
+        SubscribeLocalEvent<StorageComponent, BoundUserInterfaceCheckRangeEvent>(OnStorageUiCheckRange);
+
         SubscribeLocalEvent<ItemSizeChangedEvent>(OnItemSizeChanged);
 
         CommandBinds.Builder
@@ -177,6 +180,21 @@ public abstract class SharedStorageSystem : EntitySystem
 
         UpdatePrototypeCache();
     }
+
+    private void OnStorageUiCheckRange(Entity<StorageComponent> ent, ref BoundUserInterfaceCheckRangeEvent args)
+    {
+        // Only care about the storage UI
+        if (args.UiKey is not StorageComponent.StorageUiKey.Key)
+            return;
+
+        // Only override for implants
+        if (!HasComp<StorageImplantComponent>(ent.Owner))
+            return;
+
+        // Bypass range checks entirely for cavity search etc
+        args.Result = BoundUserInterfaceRangeResult.Pass;
+    }
+
 
     private void OnItemSizeChanged(ref ItemSizeChangedEvent ev)
     {
@@ -283,6 +301,8 @@ public abstract class SharedStorageSystem : EntitySystem
 
         // Make sure the initial starting grid is okay.
         UpdateOccupied((uid, storageComp));
+
+        //TODO temptest
     }
 
     /// <summary>
@@ -306,6 +326,7 @@ public abstract class SharedStorageSystem : EntitySystem
 
     private void OnBoundUIClosed(EntityUid uid, StorageComponent storageComp, BoundUIClosedEvent args)
     {
+        Logger.Info($"[STORAGE-UI] CLOSE uid={uid} actor={args.Actor} key={args.UiKey}");//TODO
         CloseNestedInterfaces(uid, args.Actor, storageComp);
 
         // If UI is closed for everyone
@@ -859,6 +880,7 @@ public abstract class SharedStorageSystem : EntitySystem
 
     private void OnBoundUIOpen(Entity<StorageComponent> ent, ref BoundUIOpenedEvent args)
     {
+        Logger.Info($"[STORAGE-UI] OPEN uid={ent.Owner} actor={args.Actor} key={args.UiKey}");//TODO
         UpdateAppearance((ent.Owner, ent.Comp, null));
     }
 

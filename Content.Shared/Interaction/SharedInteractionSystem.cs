@@ -10,6 +10,7 @@ using Content.Shared.Ghost;
 using Content.Shared.Hands;
 using Content.Shared.Hands.Components;
 using Content.Shared.Hands.EntitySystems;
+using Content.Shared.Implants.Components;
 using Content.Shared.Input;
 using Content.Shared.Interaction.Components;
 using Content.Shared.Interaction.Events;
@@ -164,18 +165,15 @@ namespace Content.Shared.Interaction
         /// </summary>
         private void OnBoundInterfaceInteractAttempt(Entity<UserInterfaceComponent> ent, ref BoundUserInterfaceMessageAttempt ev)
         {
-            _uiQuery.TryComp(ev.Target, out var aUiComp);
-            if (!_actionBlockerSystem.CanInteract(ev.Actor, ev.Target))
+            // Allow storage implants to bypass normal UI interaction checks.
+            if (ev.UiKey is StorageComponent.StorageUiKey.Key &&
+                HasComp<StorageImplantComponent>(ev.Target))
             {
-                // We permit ghosts to open uis unless explicitly blocked
-                if (ev.Message is not OpenBoundInterfaceMessage
-                    || !HasComp<GhostComponent>(ev.Actor)
-                    || aUiComp?.BlockSpectators == true)
-                {
-                    ev.Cancel();
-                    return;
-                }
+                // Don't touch ev.Cancelled at all: just let it through.
+                return;
             }
+
+            _uiQuery.TryComp(ev.Target, out var aUiComp);
 
             var range = _ui.GetUiRange(ev.Target, ev.UiKey);
 

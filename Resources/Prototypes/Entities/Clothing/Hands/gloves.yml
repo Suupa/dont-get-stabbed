@@ -142,6 +142,9 @@
   - type: Fiber
     fiberMaterial: fibers-latex
   - type: FingerprintMask
+  - type: Tag
+    tags:
+    - CanPerformCavitySearch
 
 - type: entity
   parent: ClothingHandsButcherable

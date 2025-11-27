@@ -2,7 +2,6 @@ using System.Linq;
 using Content.Shared.Administration.Logs;
 using Content.Shared.CombatMode;
 using Content.Shared.Cuffs;
-using Content.Shared.Cuffs.Components;
 using Content.Shared.Database;
 using Content.Shared.DoAfter;
 using Content.Shared.DragDrop;
@@ -17,7 +16,6 @@ using Content.Shared.Inventory.VirtualItem;
 using Content.Shared.Popups;
 using Content.Shared.Strip.Components;
 using Content.Shared.Verbs;
-using Robust.Shared.Serialization;
 using Robust.Shared.Utility;
 
 namespace Content.Shared.Strip;
@@ -50,8 +48,6 @@ public abstract class SharedStrippableSystem : EntitySystem
         // DoAfters
         SubscribeLocalEvent<HandsComponent, DoAfterAttemptEvent<StrippableDoAfterEvent>>(OnStrippableDoAfterRunning);
         SubscribeLocalEvent<HandsComponent, StrippableDoAfterEvent>(OnStrippableDoAfterFinished);
-        SubscribeLocalEvent<HandsComponent, DoAfterAttemptEvent<CavitySearchDoAfterEvent>>(OnCavitySearchDoAfterRunning);
-        SubscribeLocalEvent<HandsComponent, CavitySearchDoAfterEvent>(OnCavitySearchDoAfterFinished);
 
         SubscribeLocalEvent<StrippingComponent, CanDropTargetEvent>(OnCanDropOn);
         SubscribeLocalEvent<StrippableComponent, CanDropDraggedEvent>(OnCanDrop);
@@ -71,59 +67,6 @@ public abstract class SharedStrippableSystem : EntitySystem
         };
 
         args.Verbs.Add(verb);
-
-        //TODO move to seperate function, possibly with CavitySearchable Component
-        Verb verb2 = new()
-        {
-            Text = Loc.GetString("Cavity Search"),
-            Icon = new SpriteSpecifier.Texture(new("/Textures/Interface/VerbIcons/outfit.svg.192dpi.png")),
-            Act = () => PerformCavitySearch(args.User, (uid, component), true),
-        };
-
-        args.Verbs.Add(verb2);
-    }
-
-    public bool PerformCavitySearch(EntityUid user, Entity<StrippableComponent> target, bool openInCombat = false)
-    {
-        if (!openInCombat && TryComp<CombatModeComponent>(user, out var mode) && mode.IsInCombatMode)
-            return false;
-
-        if (!HasComp<StrippingComponent>(user))
-            return false;
-
-        //var compexists = TryComp<DoAfterComponent>(user, out var doAfterComp2);
-        //var count = doAfterComp2?.DoAfters.Count;
-
-        if (TryComp<DoAfterComponent>(user, out var doAfterComp)
-            && doAfterComp.DoAfters.Count > 0)
-            return false;
-
-        //TODO add if has gloves
-
-        var doAfterArgs = new DoAfterArgs(EntityManager, user, 4f, new CavitySearchDoAfterEvent(/*user,target*/),target)
-        {
-            BreakOnMove = true,
-            BreakOnDamage = true,
-            NeedHand = true,
-            Target = target
-        };
-
-        _doAfterSystem.TryStartDoAfter(doAfterArgs);
-
-        _popupSystem.PopupEntity("You perform a cavity search.", user, user);//TODO localize
-        _popupSystem.PopupEntity("You are being cavity searched.", target, target);//TODO localize
-        return true;
-    }
-
-    private void OnCavitySearchDoAfterRunning(Entity<HandsComponent> entity, ref DoAfterAttemptEvent<CavitySearchDoAfterEvent> ev)
-    {
-        Logger.Info("CavitySearch DoAfter Running");//TODO not necessairy I think
-    }
-
-    private void OnCavitySearchDoAfterFinished(Entity<HandsComponent> entity, ref CavitySearchDoAfterEvent ev)
-    {
-        Logger.Info("CavitySearch DoAfter Finished");
-        //TODO show implant storage contents
     }
 
     private void AddStripExamineVerb(EntityUid uid, StrippableComponent component, GetVerbsEvent<ExamineVerb> args)

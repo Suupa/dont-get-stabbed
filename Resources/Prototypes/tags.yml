@@ -224,6 +224,9 @@
   id: CannotSuicide # Used by SuicideSystem. Tagged entities ghost when attempting to suicide.
 
 - type: Tag
+  id: CanPerformCavitySearch # Used bySharedCavitySearchSystem. Any gloves with this tag can be used to perform cavity searches.
+
+- type: Tag
   id: CanPilot # Used by ShuttleConsoleSystem to guard who's allowed to pilot ships. Semi-synonymous with a sentient person/creature.
                # Storage whitelist: BodyBag, MachineArtifactCrusher
 
