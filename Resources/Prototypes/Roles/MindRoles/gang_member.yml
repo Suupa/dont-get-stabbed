@@ -1,0 +1,10 @@
+- type: entity
+  parent: BaseMindRoleAntag
+  id: MindRoleGangMember
+  name: Gang Member Role
+  components:
+  - type: MindRole
+    antagPrototype: GangMember          # must match your antag prototype id
+    roleType: TeamAntagonist           # or SoloAntagonist/FreeAgent if you prefer #TODO probably need new roletype
+    subtype: role-subtype-gang-member  # any unique string is fine
+  - type: GangMemberRole               # your C# component (GangMemberRoleComponent)

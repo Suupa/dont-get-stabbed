@@ -1,0 +1,29 @@
+- type: entity
+  parent: BaseGameRule
+  id: GangRule
+  components:
+  # This makes it an actual game rule with standard timing / min player handling
+  - type: GameRule
+    minPlayers: 5             # tweak as needed
+    delay:
+      min: 1                  # seconds until it “fires” after round start
+      max: 1
+
+  # Your custom rule logic component (C#) – like TraitorRule, RevolutionaryRule, etc.
+  - type: GangRule
+
+  # Antag selection: who becomes a gang member
+  - type: AntagSelection
+    selectionTime: IntraPlayerSpawn   # or PrePlayerSpawn, copy what you want from other rules
+    definitions:
+    - prefRoles: [ GangMember ]       # this is their preference slot in character setup
+      max: 8                          # max gang members
+      playerRatio: 10                 # 1 per 10 players, etc.
+      blacklist:
+        components:
+        - AntagImmune
+      mindRoles:
+      - MindRoleGangMember            # your mind-role prototype ID
+      requirements:
+        jobs:
+        - Inmate    # only inmates can be gang members (corrupt COs are linked to a gang, but are not Gang Members)

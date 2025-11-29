@@ -1,0 +1,16 @@
+- type: antag
+  id: GangMember
+  name: roles-antag-gang-member-name
+  antagonist: true
+  setPreference: true
+  objective: roles-antag-gang-member-objective
+  #guides: [ GangMembers ] #TODO
+  #startingGear: GangMemberGear
+  components:
+  - type: GangMemberRole
+  requirements:
+  - !type:OverallPlaytimeRequirement
+    time: 1h
+  icon:
+    sprite: /Textures/Interface/admin_antags.rsi
+    state: traitor   # temporary
