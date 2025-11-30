@@ -1,0 +1,23 @@
+- type: gang
+  id: AryanBrotherhood
+  name: gangs-aryan-brotherhood-name
+  nicknames:
+  - gangs-nicknames-ab
+  - gangs-nicknames-the-brand
+  car: gangs-cars-woods
+
+- type: gang
+  id: MexicanMafia
+  name: gangs-mexican-mafia-name
+  nicknames:
+  - gangs-nicknames-eme
+  car: gangs-cars-eses
+
+- type: gang
+  id: BlackGuerrillaFamily
+  name: gangs-black-guerilla-family-name
+  nicknames:
+  - gangs-nicknames-bgf
+  - gangs-nicknames-black-gorilla-family
+  - gangs-nicknames-black-family
+  car: gangs-cars-homeboys
