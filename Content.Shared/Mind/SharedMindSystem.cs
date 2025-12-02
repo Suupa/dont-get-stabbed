@@ -718,6 +718,17 @@ public abstract partial class SharedMindSystem : EntitySystem
 
         EnsureComp<ExaminerComponent>(uid);
     }
+
+    public NetUserId? GetUserFromMind(EntityUid mind)
+    {
+        foreach(var pair in UserMinds)
+        {
+            if (pair.Value == mind)
+                return pair.Key;
+        }
+
+        return null;
+    }
 }
 
 /// <summary>

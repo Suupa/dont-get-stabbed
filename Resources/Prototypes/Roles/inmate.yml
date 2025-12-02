@@ -3,7 +3,7 @@
   name: job-name-inmate
   description: job-description-inmate
   playTimeTracker: JobInmate
-  canBeAntag: false
+  canBeAntag: true
   startingGear: InmateGear
   icon: JobIconPrisoner
   setPreference: true

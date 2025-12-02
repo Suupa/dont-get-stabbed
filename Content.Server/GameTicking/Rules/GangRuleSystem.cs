@@ -2,15 +2,17 @@ using Content.Server.Antag;
 using Content.Server.GameTicking.Rules.Components;
 using Content.Server.Mind;
 using Content.Server.Roles;
-using Content.Shared.Gangs;
+using Content.Server.Gangs;
 using Content.Shared.Roles.Components;
+using Content.Shared.Roles.Jobs;
 
 namespace Content.Server.GameTicking.Rules;
 
 public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
 {
     [Dependency] private readonly AntagSelectionSystem _antag = default!;
-    [Dependency] private readonly SharedGangSystem _gang = default!;
+    [Dependency] private readonly GangSystem _gang = default!;
+    [Dependency] private readonly SharedInmateSystem _inmate = default!;//TODO check if this should be moved to server
     [Dependency] private readonly RoleSystem _roleSystem = default!;
     [Dependency] private readonly MindSystem _mind = default!;
 
@@ -55,7 +57,7 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
         {
 
             var isShotcaller = _gang.IsShotcaller(ent);
-            var rank = isShotcaller ? "the leader" : "a member"; //TODO ent or ent2?
+            var rank = Loc.GetString(isShotcaller ? "gangs-the-leader" : "gangs-a-member");
             var gangName = Loc.GetString(gangMemberMindRole.Gang?.Name!);
 
             //TODO add nicknames too
@@ -66,23 +68,22 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
 
             if (isShotcaller)
             {
-                var car = Loc.GetString(gangMemberMindRole.Gang?.Car!);
+                var car = _inmate.GetInmatesCar(ent);
 
                 briefing += Loc.GetString("gangmember-role-greeting-shotcaller",
-                    ("car", car),
+                    ("car", Loc.GetString(car!.Name)),
                     ("gangName", gangName)
                 );
             }
             else
             {
-                var shotcallerName = MetaData(gangMemberMindRole.Shotcaller!.Value).EntityName;
+                var shotcallerName = MetaData(_gang.GetShotcallerOfInmate(ent)).EntityName;
 
                 briefing += Loc.GetString("gangmember-role-greeting-member",
                     ("shotcallerName", shotcallerName),
                     ("gangName", gangName)
                 );
             }
-
 
             //TODO if needs starting equipment briefing += "\n \n" + Loc.GetString("gangmember-role-greeting-equipment") + "\n";
         }

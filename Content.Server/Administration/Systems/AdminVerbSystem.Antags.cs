@@ -4,6 +4,8 @@ using Content.Server.Zombies;
 using Content.Shared.Administration;
 using Content.Server.Clothing.Systems;
 using Content.Server.GameTicking.Rules.Components;
+using Content.Server.Mind;
+using Content.Server.Roles.Jobs;
 using Content.Shared.Database;
 using Content.Shared.Mind.Components;
 using Content.Shared.Verbs;
@@ -17,9 +19,9 @@ namespace Content.Server.Administration.Systems;
 public sealed partial class AdminVerbSystem
 {
     [Dependency] private readonly AntagSelectionSystem _antag = default!;
-    [Dependency] private readonly ZombieSystem _zombie = default!;
     [Dependency] private readonly GameTicker _gameTicker = default!;
     [Dependency] private readonly OutfitSystem _outfit = default!;
+    [Dependency] private readonly JobSystem _job = default!;
 
     private static readonly EntProtoId DefaultThiefRule = "Thief"; //TODO temptest
     private static readonly EntProtoId DefaultGangRule = "GangRule";
@@ -40,7 +42,7 @@ public sealed partial class AdminVerbSystem
 
         var targetPlayer = targetActor.PlayerSession;
 
-        //TODO temptest
+        //TODO temptest remove
         var thiefName = Loc.GetString("admin-verb-text-make-thief");
         Verb thief = new()
         {
@@ -56,20 +58,23 @@ public sealed partial class AdminVerbSystem
         };
         args.Verbs.Add(thief);
 
-        var gangMemberName = Loc.GetString("admin-verb-text-make-gang-member");
-        Verb gangMember = new()
+        if (_mindSystem.TryGetMind(player, out var mindId, out var mind) && _job.MindHasJobWithId(mindId, "Inmate"))
         {
-            Text = gangMemberName,
-            Category = VerbCategory.Antag,
-            Icon = new SpriteSpecifier.Rsi(new("/Textures/Interface/Misc/job_icons.rsi"), "DeathSquad"),
-            Act = () =>
+            var gangMemberName = Loc.GetString("admin-verb-text-make-gang-member");
+            Verb gangMember = new()
             {
-                _antag.ForceMakeAntag<GangMemberRoleComponent>(targetPlayer, DefaultGangRule);
-            },
-            Impact = LogImpact.High,
-            Message = string.Join(": ", gangMemberName, Loc.GetString("admin-verb-make-gang-member")),
-        };
-        args.Verbs.Add(gangMember);
+                Text = gangMemberName,
+                Category = VerbCategory.Antag,
+                Icon = new SpriteSpecifier.Rsi(new("/Textures/Interface/Misc/job_icons.rsi"), "DeathSquad"),
+                Act = () =>
+                {
+                    _antag.ForceMakeAntag<GangMemberRoleComponent>(targetPlayer, DefaultGangRule);
+                },
+                Impact = LogImpact.High,
+                Message = string.Join(": ", gangMemberName, Loc.GetString("admin-verb-make-gang-member")),
+            };
+            args.Verbs.Add(gangMember);
+        }
 
         //add additional verbs here
     }

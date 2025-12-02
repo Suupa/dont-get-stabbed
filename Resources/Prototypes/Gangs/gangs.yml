@@ -4,14 +4,14 @@
   nicknames:
   - gangs-nicknames-ab
   - gangs-nicknames-the-brand
-  car: gangs-cars-woods
+  car: Woods
 
 - type: gang
   id: MexicanMafia
   name: gangs-mexican-mafia-name
   nicknames:
   - gangs-nicknames-eme
-  car: gangs-cars-eses
+  car: Eses
 
 - type: gang
   id: BlackGuerrillaFamily

@@ -14,3 +14,5 @@ job-supervisors-science = Scientists and the Research Director
 job-supervisors-hire = whoever hires you
 job-supervisors-everyone = absolutely everyone
 job-supervisors-nobody = nobody
+
+job-supervisors-inmate = The Guards and the Shotcaller of your Car

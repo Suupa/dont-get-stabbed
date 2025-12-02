@@ -1,0 +1,11 @@
+- type: car
+  id: Woods
+  name: gangs-cars-woods
+
+- type: car
+  id: Eses
+  name: gangs-cars-eses
+
+- type: car
+  id: Homeboys
+  name: gangs-cars-homeboys
