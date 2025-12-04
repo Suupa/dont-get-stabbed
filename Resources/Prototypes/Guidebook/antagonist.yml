@@ -2,17 +2,17 @@
   id: Antagonists
   name: guide-entry-antagonists
   text: "/ServerInfo/Guidebook/Antagonist/Antagonists.xml"
-  children:
-  #- GangMembers #TODO
-  #- Traitors
-  #- Thieves
-  #- Revolutionaries
-  #- NuclearOperatives
-  #- SpaceNinja
-  #- Wizard
-  #- Zombies
-  #- Xenoborgs
-  #- MinorAntagonists
+  children: #TODO
+  #- GangMembers
+  - Traitors
+  - Thieves
+  - Revolutionaries
+  - NuclearOperatives
+  - SpaceNinja
+  - Wizard
+  - Zombies
+  - Xenoborgs
+  - MinorAntagonists
 
 #TODO CLEANUP
 
