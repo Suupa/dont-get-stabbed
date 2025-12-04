@@ -266,3 +266,13 @@
   - KesslerSyndromeScheduler
   - SpaceTrafficControlEventScheduler
   - BasicRoundstartVariation
+
+- type: gamePreset
+  id: GangLand
+  alias:
+  - gangland
+  name: gangmember-title
+  description: gangmember-description
+  showInVote: false
+  rules:
+  - GangRule

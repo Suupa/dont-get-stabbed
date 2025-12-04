@@ -25,7 +25,7 @@ public sealed class GangSystem : SharedGangSystem
     private readonly Dictionary<string,EntityUid> _gangShotcallerDict = new();
     private readonly Dictionary<string, List<EntityUid>> _gangToMembersDict = new();
 
-    static System.Random rnd = new();
+    private static readonly Random Rnd = new();
 
     public override void Initialize()
     {
@@ -68,7 +68,7 @@ public sealed class GangSystem : SharedGangSystem
         {
             //TODO shotcallers are picked at random now. There should probably be a playtime restriction of some type
             var members = pair.Value;
-            var r = rnd.Next(members.Count);
+            var r = Rnd.Next(members.Count);
             _gangShotcallerDict[pair.Key] = members.ElementAt(r);
         }
 
@@ -94,7 +94,8 @@ public sealed class GangSystem : SharedGangSystem
 
     public EntityUid GetShotcallerOfInmate(EntityUid inmate)
     {
-        TryComp<InmateComponent>(inmate, out var comp);
+        if (!TryComp<InmateComponent>(inmate, out var comp))
+            throw new ArgumentException($"{inmate} is not an inmate.");
 
         var gang = _carGangDict[comp!.Car.ID];
         return GetShotcallerOfGang(gang.ID);

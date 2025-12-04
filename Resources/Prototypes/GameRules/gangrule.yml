@@ -2,18 +2,13 @@
   parent: BaseGameRule
   id: GangRule
   components:
-  # This makes it an actual game rule with standard timing / min player handling
-  - type: GameRule
-    minPlayers: 5             # tweak as needed
+  - type: GameRule # This makes it an actual game rule with standard timing / min player handling
+    minPlayers: 0
     delay:
-      min: 1                  # seconds until it “fires” after round start
+      min: 1 # seconds until it “fires” after round start
       max: 1
-
-  # Your custom rule logic component (C#) – like TraitorRule, RevolutionaryRule, etc.
-  - type: GangRule
-
-  # Antag selection: who becomes a gang member
-  - type: AntagSelection
+  - type: GangRule  #TODO THIS IS PROBABLY WHERE THE GANGDATA SHOULD BE STORED # Your custom rule logic component (C#) – like TraitorRule, RevolutionaryRule, etc.
+  - type: AntagSelection # Antag selection: who becomes a gang member
     selectionTime: IntraPlayerSpawn   # or PrePlayerSpawn, copy what you want from other rules
     definitions:
     - prefRoles: [ GangMember ]       # this is their preference slot in character setup

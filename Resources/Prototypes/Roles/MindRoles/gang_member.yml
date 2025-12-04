@@ -5,6 +5,6 @@
   components:
   - type: MindRole
     antagPrototype: GangMember          # must match your antag prototype id
-    roleType: TeamAntagonist           # or SoloAntagonist/FreeAgent if you prefer #TODO probably need new roletype
+    roleType: GangMember
     subtype: role-subtype-gang-member  # any unique string is fine
   - type: GangMemberRole               # your C# component (GangMemberRoleComponent)

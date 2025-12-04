@@ -1,3 +1,4 @@
+using System.Linq;
 using Content.Server.Antag;
 using Content.Server.GameTicking.Rules.Components;
 using Content.Server.Mind;
@@ -15,6 +16,8 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
     [Dependency] private readonly SharedInmateSystem _inmate = default!;//TODO check if this should be moved to server
     [Dependency] private readonly RoleSystem _roleSystem = default!;
     [Dependency] private readonly MindSystem _mind = default!;
+
+    private static readonly Random Rnd = new();
 
     public override void Initialize()
     {
@@ -60,11 +63,15 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
             var rank = Loc.GetString(isShotcaller ? "gangs-the-leader" : "gangs-a-member");
             var gangName = Loc.GetString(gangMemberMindRole.Gang?.Name!);
 
-            //TODO add nicknames too
+            var r = Rnd.Next((int) gangMemberMindRole.Gang?.Nicknames.Count!);
+            var gangNickname = Loc.GetString(gangMemberMindRole.Gang?.Nicknames.ElementAt(r)!);
+
             briefing += Loc.GetString("gangmember-role-greeting-intro",
                 ("rank", rank),
                 ("gangName", gangName)
             );
+
+            briefing += " ";
 
             if (isShotcaller)
             {
@@ -72,7 +79,7 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
 
                 briefing += Loc.GetString("gangmember-role-greeting-shotcaller",
                     ("car", Loc.GetString(car!.Name)),
-                    ("gangName", gangName)
+                    ("gangNickname", gangNickname)
                 );
             }
             else

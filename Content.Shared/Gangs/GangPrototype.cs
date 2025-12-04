@@ -18,5 +18,5 @@ public sealed partial class GangPrototype : IPrototype
     public List<string> Nicknames { get; private set; } = new();
 
     [DataField(required: true)]
-    public string Car { get; private set; } = default!; //TODO Car should be it's own component at some point
+    public string Car { get; private set; } = default!;
 }

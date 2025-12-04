@@ -47,3 +47,9 @@
   name: role-type-silicon-antagonist-name
   color: '#c832e6'
   symbol: "⛞"
+
+- type: roleType
+  id: GangMember
+  name: role-type-gang-aligned-name
+  color: '#d82000'
+  symbol: " ☠︎︎"
