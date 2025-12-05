@@ -15,4 +15,4 @@ job-supervisors-hire = whoever hires you
 job-supervisors-everyone = absolutely everyone
 job-supervisors-nobody = nobody
 
-job-supervisors-inmate = The Guards and the Shotcaller of your Car
+job-supervisors-inmate = The Guards and the Shot Caller of your Car

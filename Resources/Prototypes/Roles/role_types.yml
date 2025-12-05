@@ -53,3 +53,10 @@
   name: role-type-gang-aligned-name
   color: '#d82000'
   symbol: " ☠︎︎"
+
+#TODO not used yet
+- type: roleType
+  id: ShotCaller
+  name: role-type-gang-shotcaller-name
+  color: '#d82000'
+  symbol: " ☠︎︎"

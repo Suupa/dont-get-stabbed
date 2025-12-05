@@ -10,6 +10,8 @@ using Content.Shared.Whitelist;
 using Robust.Shared.Audio;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Configuration;
+using Robust.Shared.Containers;
+using Robust.Shared.Network;
 using Robust.Shared.Player;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization;
@@ -26,6 +28,7 @@ public abstract class SharedRoleSystem : EntitySystem
     [Dependency] private readonly EntityWhitelistSystem _whitelist = default!;
     [Dependency] private readonly SharedMindSystem _minds = default!;
     [Dependency] private readonly IPrototypeManager _prototypes = default!;
+    [Dependency] private readonly SharedContainerSystem _container = default!;
 
     private JobRequirementOverridePrototype? _requirementOverride;
 
@@ -710,6 +713,14 @@ public abstract class SharedRoleSystem : EntitySystem
     public string GetRoleSubtypeLabel(LocId roleType, LocId? subtype)
     {
         return string.IsNullOrEmpty(subtype) ? Loc.GetString(roleType) : Loc.GetString(subtype);
+    }
+
+    public NetUserId? GetUserFromMindRole(EntityUid mindRoleId)
+    {
+        if (!_container.TryGetContainingContainer((mindRoleId, null, null), out var container))
+            return null;
+
+        return _minds.GetUserFromMind(container.Owner);
     }
 }
 

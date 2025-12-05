@@ -1,4 +1,5 @@
 using System.Linq;
+using Content.Server.GameTicking;
 using Content.Server.Mind;
 using Content.Server.Roles;
 using Content.Shared.Gangs;
@@ -6,7 +7,6 @@ using Content.Shared.Roles.Components;
 using Content.Shared.Roles.Jobs.Components;
 using Robust.Server.Containers;
 using Robust.Server.Player;
-using Robust.Shared.Network;
 using Robust.Shared.Prototypes;
 
 namespace Content.Server.Gangs;
@@ -19,8 +19,10 @@ public sealed class GangSystem : SharedGangSystem
     [Dependency] private readonly MindSystem _mind = default!;
     [Dependency] private readonly ContainerSystem _containers = default!;
     [Dependency] private readonly IPlayerManager _players = default!;
+    [Dependency] private readonly RoleSystem _role = default!;
 
     //TODO technically system shouldn't have data, but this seems like the best way to do this
+    //TODO see if it's possible to move this all to components
     private readonly Dictionary<string,GangPrototype> _carGangDict = new();
     private readonly Dictionary<string,EntityUid> _gangShotcallerDict = new();
     private readonly Dictionary<string, List<EntityUid>> _gangToMembersDict = new();
@@ -30,8 +32,17 @@ public sealed class GangSystem : SharedGangSystem
     public override void Initialize()
     {
         base.Initialize();
-        //SubscribeLocalEvent..
+
+        SubscribeLocalEvent<RoundStartAttemptEvent>(OnRoundStarted);
     }
+
+    private void OnRoundStarted(RoundStartAttemptEvent ev)
+    {
+        _carGangDict.Clear();
+        _gangShotcallerDict.Clear();
+        _gangToMembersDict.Clear();
+    }
+
     public void SortIntoGangs()
     {
         var enumerator = EntityQueryEnumerator<GangMemberRoleComponent>();
@@ -47,7 +58,8 @@ public sealed class GangSystem : SharedGangSystem
         //assign gangs to gangmembers
         while (enumerator.MoveNext(out var mindRoleId, out var gangMemberComp))
         {
-            var mobNetUserId = GetMobFromMindRole(mindRoleId);
+            var mobNetUserId = _role.GetUserFromMindRole(mindRoleId);
+
             if (!_players.TryGetSessionById(mobNetUserId, out var session))
                 continue;
 
@@ -64,49 +76,44 @@ public sealed class GangSystem : SharedGangSystem
         }
 
         //fill _gangShotcallerDict
-        foreach (var pair in _gangToMembersDict)
+        foreach (var (gang, members) in _gangToMembersDict)
         {
             //TODO shotcallers are picked at random now. There should probably be a playtime restriction of some type
-            var members = pair.Value;
             var r = Rnd.Next(members.Count);
-            _gangShotcallerDict[pair.Key] = members.ElementAt(r);
+            var shotCaller = members.ElementAt(r);
+
+            if (!_mind.TryGetMind(shotCaller, out var mindId, out _))
+                continue;
+
+            if(!_role.MindHasRole<GangMemberRoleComponent>(mindId, out var mindComp))
+                continue;
+
+            mindComp.Value.Comp2.IsShotCaller = true;
+            _gangShotcallerDict[gang] = shotCaller;
         }
 
     }
 
-    private NetUserId? GetMobFromMindRole(EntityUid mindRoleId)
+    public bool MindBelongsToShotCaller(EntityUid mindId)
     {
-        if (!_containers.TryGetContainingContainer((mindRoleId, null, null), out var container))
-            return null;
-
-        return _mind.GetUserFromMind(container.Owner);
+        return _role.MindHasRole<GangMemberRoleComponent>(mindId, out var role) && role.Value.Comp2.IsShotCaller;
     }
 
-    private List<GangPrototype> GetPossibleGangs()
-    {
-        return _prototype.EnumeratePrototypes<GangPrototype>().ToList();
-    }
-
-    public bool IsShotcaller(EntityUid ent)
-    {
-        return ent == GetShotcallerOfInmate(ent);
-    }
-
-    public EntityUid GetShotcallerOfInmate(EntityUid inmate)
+    public EntityUid GetShotCallerOfInmate(EntityUid inmate)
     {
         if (!TryComp<InmateComponent>(inmate, out var comp))
             throw new ArgumentException($"{inmate} is not an inmate.");
 
         var gang = _carGangDict[comp!.Car.ID];
-        return GetShotcallerOfGang(gang.ID);
+        return GetShotCallerOfGang(gang.ID);
     }
 
-    public EntityUid GetShotcallerOfGang(GangPrototype gang)
+    public EntityUid GetShotCallerOfGang(GangPrototype gang)
     {
         return _gangShotcallerDict[gang.ID];
     }
 
-    public EntityUid GetShotcallerOfGang(string gangId)
+    public EntityUid GetShotCallerOfGang(string gangId)
     {
         return _gangShotcallerDict[gangId];
     }
@@ -119,5 +126,10 @@ public sealed class GangSystem : SharedGangSystem
     public GangPrototype GetGangByCarId(string carId)
     {
         return _carGangDict[carId];
+    }
+
+    private List<GangPrototype> GetPossibleGangs()
+    {
+        return _prototype.EnumeratePrototypes<GangPrototype>().ToList();
     }
 }

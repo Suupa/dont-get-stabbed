@@ -54,17 +54,19 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
         var briefing = "";
         if (
             _mind.TryGetMind(ent, out var mindId, out var mind)
-            && _roleSystem.MindHasRole<GangMemberRoleComponent>(mindId, out var ent2)
-            && TryComp<GangMemberRoleComponent>(ent2, out var gangMemberMindRole)
+            && _roleSystem.MindHasRole<GangMemberRoleComponent>(mindId, out var role)
+            && TryComp<GangMemberRoleComponent>(role, out var gangMemberRole)
             )
         {
+            //TODO check if this can't be done without trycomp
+            //var gangMemberRole = role.Value.Comp2;
 
-            var isShotcaller = _gang.IsShotcaller(ent);
-            var rank = Loc.GetString(isShotcaller ? "gangs-the-leader" : "gangs-a-member");
-            var gangName = Loc.GetString(gangMemberMindRole.Gang?.Name!);
+            var isShotCaller = gangMemberRole.IsShotCaller;
+            var rank = Loc.GetString(isShotCaller ? "gangs-the-leader" : "gangs-a-member");
+            var gangName = Loc.GetString(gangMemberRole.Gang?.Name!);
 
-            var r = Rnd.Next((int) gangMemberMindRole.Gang?.Nicknames.Count!);
-            var gangNickname = Loc.GetString(gangMemberMindRole.Gang?.Nicknames.ElementAt(r)!);
+            var r = Rnd.Next((int) gangMemberRole.Gang?.Nicknames.Count!);
+            var gangNickname = Loc.GetString(gangMemberRole.Gang?.Nicknames.ElementAt(r)!);
 
             briefing += Loc.GetString("gangmember-role-greeting-intro",
                 ("rank", rank),
@@ -73,7 +75,7 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
 
             briefing += " ";
 
-            if (isShotcaller)
+            if (isShotCaller)
             {
                 var car = _inmate.GetInmatesCar(ent);
 
@@ -84,10 +86,10 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
             }
             else
             {
-                var shotcallerName = MetaData(_gang.GetShotcallerOfInmate(ent)).EntityName;
+                var shotCallerName = MetaData(_gang.GetShotCallerOfInmate(ent)).EntityName;
 
                 briefing += Loc.GetString("gangmember-role-greeting-member",
-                    ("shotcallerName", shotcallerName),
+                    ("shotCallerName", shotCallerName),
                     ("gangName", gangName)
                 );
             }
