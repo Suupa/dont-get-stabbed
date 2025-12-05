@@ -1,3 +1,4 @@
+#Gang Member
 - type: entity
   parent: BaseMindRoleAntag
   id: MindRoleGangMember
@@ -8,3 +9,13 @@
     roleType: GangMember
     subtype: role-subtype-gang-member  # any unique string is fine
   - type: GangMemberRole               # your C# component (GangMemberRoleComponent)
+
+#Shot Caller
+- type: entity
+  parent: BaseMindRole
+  id: MindRoleShotCaller
+  name: Shot Caller
+  components:
+  - type: ShotCallerRole
+#  - type: MindRole #TODO see if I need this
+#    sortWeight: -10

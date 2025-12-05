@@ -80,16 +80,7 @@ public sealed class GangSystem : SharedGangSystem
         {
             //TODO shotcallers are picked at random now. There should probably be a playtime restriction of some type
             var r = Rnd.Next(members.Count);
-            var shotCaller = members.ElementAt(r);
-
-            if (!_mind.TryGetMind(shotCaller, out var mindId, out _))
-                continue;
-
-            if(!_role.MindHasRole<GangMemberRoleComponent>(mindId, out var mindComp))
-                continue;
-
-            mindComp.Value.Comp2.IsShotCaller = true;
-            _gangShotcallerDict[gang] = shotCaller;
+            MakeShotCaller(members.ElementAt(r));
         }
 
     }
@@ -126,6 +117,43 @@ public sealed class GangSystem : SharedGangSystem
     public GangPrototype GetGangByCarId(string carId)
     {
         return _carGangDict[carId];
+    }
+
+    public bool MakeShotCaller(EntityUid mob)
+    {
+        if (!_mind.TryGetMind(mob, out var mindId, out _))
+            return false;
+
+        if(!_role.MindHasRole<GangMemberRoleComponent>(mindId, out var mindComp))
+            return false;
+
+        if (mindComp.Value.Comp2.Gang == null)
+            return false;
+
+        mindComp.Value.Comp2.IsShotCaller = true;
+        _role.MindAddRole(mindId, "MindRoleShotCaller");
+        _gangShotcallerDict[mindComp.Value.Comp2.Gang.ID] = mob;
+        return true;
+    }
+
+    //should be called BEFORE setting new Shot Caller //TODO this comment is no longer needed when _gangShotcallerDict is removed
+    public bool RevokeShotCallerStatus(EntityUid mob)
+    {
+        if (!_mind.TryGetMind(mob, out var mindId, out _))
+            return false;
+
+        if(!_role.MindHasRole<GangMemberRoleComponent>(mindId, out var mindComp))
+            return false;
+
+        if (mindComp.Value.Comp2.Gang == null)
+            return false;
+
+        if (!_role.MindRemoveRole<ShotCallerRoleComponent>(mob))
+            return false;
+
+        mindComp.Value.Comp2.IsShotCaller = false;
+        _gangShotcallerDict[mindComp.Value.Comp2.Gang.ID] = new EntityUid(); //TODO probably not advisable, but I want to remove _gangShotcallerDict anyway
+        return true;
     }
 
     private List<GangPrototype> GetPossibleGangs()
