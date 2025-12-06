@@ -30,10 +30,8 @@ public sealed class SharedInmateSystem : EntitySystem
 
     public CarPrototype? GetInmatesCar(EntityUid inmate)
     {
-        if (!_mind.TryGetMind(inmate, out var mindId, out var mind) || !_job.MindHasJobWithId(mindId, "Inmate"))
+        if (!_mind.TryGetMind(inmate, out var mindId, out _) || !_job.MindHasJobWithId(mindId, "Inmate"))
             return null;
-
-        var possibleGangs = _prototype.EnumeratePrototypes<CarPrototype>().ToList();
 
         return !TryComp<InmateComponent>(inmate, out var comp) ? null : comp.Car;
     }
@@ -43,6 +41,7 @@ public sealed class SharedInmateSystem : EntitySystem
         return [.._cars];
     }
 
+    //TODO once I move the gang sorting call to Gang system, this might cause a race condition so make sure this gets called first
     private void OnPlayerSpawned(PlayerSpawnCompleteEvent ev)
     {
         if (ev.JobId != "Inmate")

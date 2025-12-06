@@ -31,7 +31,8 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
     // Greeting upon gang member activation
     private void AfterAntagSelected(Entity<GangRuleComponent> mindId, ref AfterAntagEntitySelectedEvent args)
     {
-        _gang.SortIntoGangs();//TODO find out where this needs to be called for normal antag selection
+        //TODO find out where this needs to be called (this currently runs every time a new player is selected to be an antag. This should obviously be linked to roundstart instead (or something like that)
+        _gang.SortIntoGangs();
 
         var ent = args.EntityUid;
         _antag.SendBriefing(ent, MakeBriefing(ent), null, null);
@@ -49,19 +50,15 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
 
     private string MakeBriefing(EntityUid ent)
     {
-        //TODO does this only work when selecting antag as admin? If so, make sure it works on normal antag selection too
-
         var briefing = "";
         if (
-            _mind.TryGetMind(ent, out var mindId, out var mind)
+            _mind.TryGetMind(ent, out var mindId, out _)
             && _roleSystem.MindHasRole<GangMemberRoleComponent>(mindId, out var role)
             && TryComp<GangMemberRoleComponent>(role, out var gangMemberRole)
             )
         {
-            //TODO check if this can't be done without trycomp
-            //var gangMemberRole = role.Value.Comp2;
 
-            var isShotCaller = gangMemberRole.IsShotCaller;
+            var isShotCaller = _gang.IsShotCaller(ent);
             var rank = Loc.GetString(isShotCaller ? "gangs-the-leader" : "gangs-a-member");
             var gangName = Loc.GetString(gangMemberRole.Gang?.Name!);
 

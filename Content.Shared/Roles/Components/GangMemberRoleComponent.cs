@@ -8,6 +8,4 @@ public sealed partial class GangMemberRoleComponent : BaseMindRoleComponent
 {
     [DataField]
     public GangPrototype? Gang  { get; set; }
-
-    public bool IsShotCaller  { get; set; }
 }

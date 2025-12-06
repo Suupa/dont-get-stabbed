@@ -722,6 +722,17 @@ public abstract class SharedRoleSystem : EntitySystem
 
         return _minds.GetUserFromMind(container.Owner);
     }
+
+    public EntityUid? GetMobFromMindRole(EntityUid mindRoleId)
+    {
+        // The role entity is parented to the Mind entity.
+        var mindId = Transform(mindRoleId).ParentUid;
+
+        if (!TryComp<MindComponent>(mindId, out var mind))
+            return null;
+
+        return mind.OwnedEntity;
+    }
 }
 
 /// <summary>
