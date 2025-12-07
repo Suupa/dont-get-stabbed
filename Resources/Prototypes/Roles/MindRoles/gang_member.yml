@@ -8,6 +8,7 @@
     antagPrototype: GangMember          # must match your antag prototype id
     roleType: GangMember
     subtype: role-subtype-gang-member  # any unique string is fine
+    exclusiveAntag: true               # suppress generic job greetings while gang member
   - type: GangMemberRole               # your C# component (GangMemberRoleComponent)
 
 #Shot Caller

@@ -40,10 +40,13 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
 
     private void AfterAntagSelected(Entity<GangRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)
     {
-        _roleSystem.MindAddRole(args.EntityUid, "MindRoleGangMember");
+        var mob = args.EntityUid;
+        if (!_mind.TryGetMind(mob, out var mindId, out var mindComp))
+            return;
+        _roleSystem.MindAddRole(mindId, "MindRoleGangMember");
 
-        // If the player is already spawned, send the briefing
-        if (_mind.TryGetMind(args.EntityUid, out _, out var mindComp) && mindComp.OwnedEntity.HasValue)
+        // if the player is already spawned, send the briefing
+        if (mindComp.OwnedEntity.HasValue)
         {
             // the role was just added, which triggers GangSystem.OnRoleAdded which assigns gang
             _antag.SendBriefing(mindComp.OwnedEntity.Value, MakeBriefing(mindComp.OwnedEntity.Value), null, null);
@@ -57,7 +60,8 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
         if (!_mind.TryGetMind(ev.Mob, out var mindId, out _))
             return;
 
-        if (!_roleSystem.MindHasRole<GangMemberRoleComponent>(mindId, out _))
+        var hasGangRole = _roleSystem.MindHasRole<GangMemberRoleComponent>(mindId, out _);
+        if (!hasGangRole)
             return;
 
         _antag.SendBriefing(ev.Mob, MakeBriefing(ev.Mob), null, null);
@@ -82,9 +86,7 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
             )
         {
             if (gangMemberRole.Gang == null)
-            {
                 return Loc.GetString("gangmember-role-greeting-no-gang-error"); // Or just return empty/generic
-            }
 
             var isShotCaller = _gang.IsShotCaller(ent);
             var rank = Loc.GetString(isShotCaller ? "gangs-the-leader" : "gangs-a-member");
