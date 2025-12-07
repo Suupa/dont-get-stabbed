@@ -4,6 +4,7 @@ using Content.Shared.Mind;
 using Content.Shared.Roles;
 using Content.Shared.Roles.Jobs;
 using Robust.Shared.Player;
+using Content.Shared.GameTicking;
 
 namespace Content.Server.Roles.Jobs;
 
@@ -42,6 +43,11 @@ public sealed class JobSystem : SharedJobSystem
         if (args.Silent)
             return;
 
+        SendJobGreeting(mindId, component);
+    }
+
+    private void SendJobGreeting(EntityUid mindId, MindComponent component)
+    {
         if (!_player.TryGetSessionById(component.UserId, out var session))
             return;
 

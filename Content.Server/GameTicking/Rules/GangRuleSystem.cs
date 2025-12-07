@@ -4,6 +4,7 @@ using Content.Server.GameTicking.Rules.Components;
 using Content.Server.Mind;
 using Content.Server.Roles;
 using Content.Server.Gangs;
+using Content.Shared.GameTicking;
 using Content.Shared.Roles.Components;
 using Content.Shared.Roles.Jobs;
 
@@ -13,7 +14,7 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
 {
     [Dependency] private readonly AntagSelectionSystem _antag = default!;
     [Dependency] private readonly GangSystem _gang = default!;
-    [Dependency] private readonly SharedInmateSystem _inmate = default!;//TODO check if this should be moved to server
+    [Dependency] private readonly SharedInmateSystem _inmate = default!;
     [Dependency] private readonly RoleSystem _roleSystem = default!;
     [Dependency] private readonly MindSystem _mind = default!;
 
@@ -24,21 +25,44 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
         base.Initialize();
 
         SubscribeLocalEvent<GangRuleComponent, AfterAntagEntitySelectedEvent>(AfterAntagSelected);
-
         SubscribeLocalEvent<GangMemberRoleComponent, GetBriefingEvent>(OnGetBriefing);
+
+        //run after GangSystem so that the gang is assigned before making a briefing
+        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnPlayerSpawned, null, new[] {typeof(GangSystem)});
     }
 
-    // Greeting upon gang member activation
-    private void AfterAntagSelected(Entity<GangRuleComponent> mindId, ref AfterAntagEntitySelectedEvent args)
+    // two mutually exclusive timing paths:
+    // 1) gangMember role assigned before/during spawn (round-start antag):
+    // AfterAntagEntitySelected->_roleSystem.MindAddRole(... "MindRoleGangMember")->OnPlayerSpawned->SendBriefing
+    // 2) role assigned after spawn (late join / late antag grant):
+    // OnPlayerSpawned (no GangMember role so exits)->AfterAntagEntitySelected (adds role)->SendBriefing
+    // so SendBriefing always gets called exactly once
+
+    private void AfterAntagSelected(Entity<GangRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)
     {
-        //TODO find out where this needs to be called (this currently runs every time a new player is selected to be an antag. This should obviously be linked to roundstart instead (or something like that)
-        _gang.SortIntoGangs();
+        _roleSystem.MindAddRole(args.EntityUid, "MindRoleGangMember");
 
-        var ent = args.EntityUid;
-        _antag.SendBriefing(ent, MakeBriefing(ent), null, null);
+        // If the player is already spawned, send the briefing
+        if (_mind.TryGetMind(args.EntityUid, out _, out var mindComp) && mindComp.OwnedEntity.HasValue)
+        {
+            // the role was just added, which triggers GangSystem.OnRoleAdded which assigns gang
+            _antag.SendBriefing(mindComp.OwnedEntity.Value, MakeBriefing(mindComp.OwnedEntity.Value), null, null);
+        }
+        // otherwise OnPlayerSpawned will call SendBriefing when the player spawns
     }
 
-    // Character screen briefing
+    // GangSystem.OnPlayerSpawned runs first so gangs are assigned
+    private void OnPlayerSpawned(PlayerSpawnCompleteEvent ev)
+    {
+        if (!_mind.TryGetMind(ev.Mob, out var mindId, out _))
+            return;
+
+        if (!_roleSystem.MindHasRole<GangMemberRoleComponent>(mindId, out _))
+            return;
+
+        _antag.SendBriefing(ev.Mob, MakeBriefing(ev.Mob), null, null);
+    }
+
     private void OnGetBriefing(Entity<GangMemberRoleComponent> role, ref GetBriefingEvent args)
     {
         var ent = args.Mind.Comp.OwnedEntity;
@@ -57,13 +81,17 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
             && TryComp<GangMemberRoleComponent>(role, out var gangMemberRole)
             )
         {
+            if (gangMemberRole.Gang == null)
+            {
+                return Loc.GetString("gangmember-role-greeting-no-gang-error"); // Or just return empty/generic
+            }
 
             var isShotCaller = _gang.IsShotCaller(ent);
             var rank = Loc.GetString(isShotCaller ? "gangs-the-leader" : "gangs-a-member");
-            var gangName = Loc.GetString(gangMemberRole.Gang?.Name!);
+            var gangName = Loc.GetString(gangMemberRole.Gang.Name);
 
-            var r = Rnd.Next((int) gangMemberRole.Gang?.Nicknames.Count!);
-            var gangNickname = Loc.GetString(gangMemberRole.Gang?.Nicknames.ElementAt(r)!);
+            var r = Rnd.Next(gangMemberRole.Gang.Nicknames.Count);
+            var gangNickname = Loc.GetString(gangMemberRole.Gang.Nicknames.ElementAt(r));
 
             briefing += Loc.GetString("gangmember-role-greeting-intro",
                 ("rank", rank),
@@ -75,15 +103,17 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
             if (isShotCaller)
             {
                 var car = _inmate.GetInmatesCar(ent);
+                var carName = car != null ? Loc.GetString(car.Name) : "Unknown";
 
                 briefing += Loc.GetString("gangmember-role-greeting-shotcaller",
-                    ("car", Loc.GetString(car!.Name)),
+                    ("car", carName),
                     ("gangNickname", gangNickname)
                 );
             }
             else
             {
-                var shotCallerName = MetaData(_gang.GetShotCallerOfInmate(ent)).EntityName;
+                var shotCaller = _gang.GetShotCallerOfInmate(ent);
+                var shotCallerName = MetaData(shotCaller).EntityName;
 
                 briefing += Loc.GetString("gangmember-role-greeting-member",
                     ("shotCallerName", shotCallerName),

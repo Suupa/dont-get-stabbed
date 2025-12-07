@@ -2,9 +2,12 @@ using System.Linq;
 using Content.Server.GameTicking;
 using Content.Server.Mind;
 using Content.Server.Roles;
+using Content.Shared.GameTicking;
 using Content.Shared.Gangs;
 using Content.Shared.Mind;
+using Content.Shared.Roles;
 using Content.Shared.Roles.Components;
+using Content.Shared.Roles.Jobs;
 using Content.Shared.Roles.Jobs.Components;
 using Robust.Server.Player;
 using Robust.Shared.Prototypes;
@@ -27,6 +30,9 @@ public sealed class GangSystem : SharedGangSystem
         base.Initialize();
 
         SubscribeLocalEvent<RoundStartAttemptEvent>(OnRoundStarted);
+        // runs after SharedInmateSystem to ensure Car is assigned first
+        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnPlayerSpawned, null, new [] { typeof(SharedInmateSystem) });
+        SubscribeLocalEvent<RoleAddedEvent>(OnRoleAdded);
     }
 
     private void OnRoundStarted(RoundStartAttemptEvent ev)
@@ -34,37 +40,58 @@ public sealed class GangSystem : SharedGangSystem
 
     }
 
-    public void SortIntoGangs()
+    // handle cases where role is added after spawn (f.e. late join antag selection)
+    private void OnRoleAdded(RoleAddedEvent args)
     {
-        var enumerator = EntityQueryEnumerator<GangMemberRoleComponent>();
+        // role just added. Check if we have a mob ready to assign gang
+        if (!TryComp<MindComponent>(args.MindId, out var mind) || mind.OwnedEntity == null)
+            return; // No mob yet. OnPlayerSpawned will handle it when they spaw.
 
-        //assign gangs to gangmembers
-        while (enumerator.MoveNext(out var mindRoleId, out var gangMemberComp))
+        if (!_role.MindHasRole<GangMemberRoleComponent>(args.MindId, out var roleEnt))
+            return;
+
+        var mob = mind.OwnedEntity.Value;
+        AssignGang(mob, roleEnt.Value.Owner, roleEnt.Value.Comp2);
+    }
+
+    private void OnPlayerSpawned(PlayerSpawnCompleteEvent ev)
+    {
+        if (!_mind.TryGetMind(ev.Mob, out var mindId, out _))
+            return;
+
+        // if mob doesn't have GangMember role yet, do nothing.
+        if (!_role.MindHasRole<GangMemberRoleComponent>(mindId, out var roleEnt))
+            return;
+
+        // Otherwise assign gang (if not already done)
+        AssignGang(ev.Mob, roleEnt.Value.Owner, roleEnt.Value.Comp2);
+    }
+
+    private void AssignGang(EntityUid mob, EntityUid roleUid, GangMemberRoleComponent gangMemberComp)
+    {
+        // skip if already assigned
+        if (gangMemberComp.Gang != null)
+            return;
+
+        if (!TryComp<InmateComponent>(mob, out var inmateComp))
+            return;
+
+        gangMemberComp.Gang = GetGangByCar(inmateComp.Car);
+        Dirty(roleUid, gangMemberComp);
+
+        // ensure a Shot Caller exists for this gang
+        if (gangMemberComp.Gang != null)
         {
-            var mob = _role.GetMobFromMindRole(mindRoleId);
-
-            if (mob == null)
-                continue;
-
-            if (!TryComp<InmateComponent>(mob, out var inmateComp))
-                continue;
-
-            gangMemberComp.Gang = GetGangByCar(inmateComp.Car);
-            //explicitly marks that component on that entity as "changed." This tells the server's networking system that the state of GangMemberRoleComponent for the entity mindRoleId has been updated and needs to be replicated (sent) to all relevant clients.
-            Dirty(mindRoleId, gangMemberComp);
+            if (GetShotCallerOfGang(gangMemberComp.Gang.ID) == null)
+            {
+                MakeShotCaller(mob);
+            }
         }
+    }
 
-        //pick Shot Callers
-        foreach (var gang in GetPossibleGangs())
-        {
-            //TODO shotcallers are picked at random now. There should probably be a playtime restriction of some type
-            var members = GetMembersOfGang(gang);
-            if (members.Count <= 0)
-                continue;
-            var r = Rnd.Next(members.Count);
-            MakeShotCaller(members.ElementAt(r));
-        }
-
+    public int GetMemberCount(string gangId)
+    {
+        return GetMembersOfGang(gangId).Count;
     }
 
     public bool IsShotCaller(EntityUid mob)
@@ -96,7 +123,6 @@ public sealed class GangSystem : SharedGangSystem
         using var shotCallersEnum = EntityQueryEnumerator<ShotCallerRoleComponent>();
         while(shotCallersEnum.MoveNext(out var shotCallerRoleId, out _))
         {
-            // get the Mind entity (Parent of the Role) directly.
             var mindId = Transform(shotCallerRoleId).ParentUid;
 
             if (!_role.MindHasRole<GangMemberRoleComponent>(mindId, out var gangRole))
@@ -104,7 +130,6 @@ public sealed class GangSystem : SharedGangSystem
 
             if (gangRole.Value.Comp2.Gang?.ID == gangId)
             {
-                // mind.OwnedEntity = mob
                 if (TryComp<MindComponent>(mindId, out var mind))
                     return mind.OwnedEntity;
             }
@@ -142,7 +167,6 @@ public sealed class GangSystem : SharedGangSystem
         if (mindComp.Value.Comp2.Gang == null)
             return false;
 
-        //remove previous Shot Caller of this gang
         var currentShotCaller = GetShotCallerOfGang(mindComp.Value.Comp2.Gang);
         if(currentShotCaller != null)
             RevokeShotCallerStatus(currentShotCaller.Value);
@@ -156,7 +180,7 @@ public sealed class GangSystem : SharedGangSystem
         return _mind.TryGetMind(mob, out var mindId, out _) && _role.MindRemoveRole<ShotCallerRoleComponent>(mindId);
     }
 
-    public List<EntityUid> GetMembersOfGang(GangPrototype gang)
+    public List<EntityUid> GetMembersOfGang(string gangId)
     {
         using var gangMemberEnum = EntityQueryEnumerator<GangMemberRoleComponent>();
         var members = new List<EntityUid>();
@@ -166,7 +190,7 @@ public sealed class GangSystem : SharedGangSystem
                 continue;
 
             var member = _role.GetMobFromMindRole(mindRoleId);
-            if (gangMemberRole.Gang?.ID == gang.ID && member != null)
+            if (gangMemberRole.Gang?.ID == gangId && member != null)
                 members.Add(member.Value);
         }
 

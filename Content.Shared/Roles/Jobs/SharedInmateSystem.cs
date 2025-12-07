@@ -41,7 +41,6 @@ public sealed class SharedInmateSystem : EntitySystem
         return [.._cars];
     }
 
-    //TODO once I move the gang sorting call to Gang system, this might cause a race condition so make sure this gets called first
     private void OnPlayerSpawned(PlayerSpawnCompleteEvent ev)
     {
         if (ev.JobId != "Inmate")
