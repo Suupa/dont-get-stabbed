@@ -9,7 +9,6 @@ using Content.Shared.Roles;
 using Content.Shared.Roles.Components;
 using Content.Shared.Roles.Jobs;
 using Content.Shared.Roles.Jobs.Components;
-using Robust.Server.Player;
 using Robust.Shared.Prototypes;
 
 namespace Content.Server.Gangs;
@@ -20,7 +19,6 @@ public sealed class GangSystem : SharedGangSystem
 
     [Dependency] private readonly IPrototypeManager _prototype = default!;
     [Dependency] private readonly MindSystem _mind = default!;
-    [Dependency] private readonly IPlayerManager _players = default!;
     [Dependency] private readonly RoleSystem _role = default!;
 
     private static readonly Random Rnd = new();
@@ -43,9 +41,9 @@ public sealed class GangSystem : SharedGangSystem
     // handle cases where role is added after spawn (f.e. late join antag selection)
     private void OnRoleAdded(RoleAddedEvent args)
     {
-        // role just added. Check if we have a mob ready to assign gang
+        // role just added. Check if there's a mob ready to assign gang
         if (!TryComp<MindComponent>(args.MindId, out var mind) || mind.OwnedEntity == null)
-            return; // No mob yet. OnPlayerSpawned will handle it when they spaw.
+            return; // no mob yet (OnPlayerSpawned will handle it when they spawn)
 
         if (!_role.MindHasRole<GangMemberRoleComponent>(args.MindId, out var roleEnt))
             return;

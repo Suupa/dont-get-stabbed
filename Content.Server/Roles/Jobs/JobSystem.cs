@@ -1,11 +1,11 @@
 ﻿using System.Globalization;
+using Content.Server.Antag;
 using Content.Server.Chat.Managers;
+using Content.Shared.GameTicking;
 using Content.Shared.Mind;
 using Content.Shared.Roles;
 using Content.Shared.Roles.Jobs;
 using Robust.Shared.Player;
-using Content.Shared.GameTicking;
-using Robust.Shared.Timing;
 
 namespace Content.Server.Roles.Jobs;
 
@@ -24,15 +24,16 @@ public sealed class JobSystem : SharedJobSystem
         base.Initialize();
         SubscribeLocalEvent<RoleAddedEvent>(OnRoleAddedEvent);
         SubscribeLocalEvent<RoleRemovedEvent>(OnRoleRemovedEvent);
-        // defer greetings until after spawn so any exclusive antag roles (f.e. GangMember) are present
-        // and after GangSystem to ensure Gang assignment is finalized
-        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnPlayerSpawned, null,[typeof(Gangs.GangSystem), typeof(GameTicking.Rules.GangRuleSystem)]);
+        // defer greetings until after spawn so any exclusive antag roles (f.e. gang members) are present
+        // run strictly after GangSystem, GangRuleSystem and AntagSelectionSystem so assignment is finalized
+        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(
+            OnPlayerSpawned,
+            null,
+            [typeof(Gangs.GangSystem), typeof(GameTicking.Rules.GangRuleSystem), typeof(AntagSelectionSystem)]);
     }
 
     private void OnRoleAddedEvent(RoleAddedEvent args)
     {
-        MindOnDoGreeting(args.MindId, args.Mind, args);
-
         if (args.RoleTypeUpdate)
             _roles.RoleUpdateMessage(args.Mind);
     }
@@ -43,21 +44,6 @@ public sealed class JobSystem : SharedJobSystem
             _roles.RoleUpdateMessage(args.Mind);
     }
 
-    private void MindOnDoGreeting(EntityUid mindId, MindComponent component, RoleAddedEvent args)
-    {
-        if (args.Silent)
-            return;
-
-        // skip if no mob yet. (OnPlayerSpawned will handle this)
-        if (!component.OwnedEntity.HasValue)
-            return;
-
-        // defer by a short delay and re-check exclusivity. This avoids the round-start window
-        // where PlayerSpawn completes before antag selection runs, which would otherwise cause
-        // Inmate greetings to be sent to players who will become exclusive antags (Gang Members)
-        Timer.Spawn(TimeSpan.FromSeconds(2), () => SendJobGreetingIfAllowed(mindId));
-    }
-
     private void SendJobGreeting(EntityUid mindId, MindComponent component)
     {
         if (!MindTryGetJob(mindId, out var job))
@@ -65,8 +51,13 @@ public sealed class JobSystem : SharedJobSystem
         if (!_player.TryGetSessionById(component.UserId, out var session))
             return;
 
-        _chat.DispatchServerMessage(session, Loc.GetString("job-greet-introduce-job-name",
-            ("jobName", CultureInfo.CurrentCulture.TextInfo.ToTitleCase(job.LocalizedName))));
+        // for exclusive antagonists (f.e. Gang Member) suppress the generic
+        // "Your role is: {jobName}" chat line to avoid confusing/duplicate messages
+        if (!_roles.MindIsExclusiveAntagonist(mindId))
+        {
+            _chat.DispatchServerMessage(session, Loc.GetString("job-greet-introduce-job-name",
+                ("jobName", CultureInfo.CurrentCulture.TextInfo.ToTitleCase(job.LocalizedName))));
+        }
 
         if (job.RequireAdminNotify)
             _chat.DispatchServerMessage(session, Loc.GetString("job-greet-important-disconnect-admin-notify"));
@@ -95,9 +86,8 @@ public sealed class JobSystem : SharedJobSystem
         if (!_mind.TryGetMind(ev.Mob, out var mindId, out var mind))
             return;
 
-        // defer by a short delay to allow antag selection/game rules to complete first
-        // then re-check exclusivity before sending.
-        Timer.Spawn(TimeSpan.FromSeconds(2), () => SendJobGreetingIfAllowed(mindId));
+        // Ordering ensures antag/gang assignment has completed. send immediately after re-check.
+        SendJobGreetingIfAllowed(mindId);
     }
 
     public void MindAddJob(EntityUid mindId, string jobPrototypeId)
