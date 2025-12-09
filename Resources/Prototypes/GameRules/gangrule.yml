@@ -12,8 +12,10 @@
     selectionTime: IntraPlayerSpawn   # or PrePlayerSpawn, copy what you want from other rules
     definitions:
     - prefRoles: [ GangMember ]       # this is their preference slot in character setup
+      lateJoinAdditional: true        # allow assigning gang members to late-joiners if slots/ratio permit
+      min: 1                          # ensure at least one gang member can exist even on low-pop rounds
       max: 8                          # max gang members
-      playerRatio: 10                 # 1 per 10 players, etc.
+      playerRatio: 1                  # gangmember/player ratio TODO it makes more sense to define gangmember/inmates ratio
       blacklist:
         components:
         - AntagImmune

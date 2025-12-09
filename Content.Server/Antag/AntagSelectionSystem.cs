@@ -72,7 +72,11 @@ public sealed partial class AntagSelectionSystem : GameRuleSystem<AntagSelection
         SubscribeLocalEvent<NoJobsAvailableSpawningEvent>(OnJobNotAssigned);
         SubscribeLocalEvent<RulePlayerSpawningEvent>(OnPlayerSpawning);
         SubscribeLocalEvent<RulePlayerJobsAssignedEvent>(OnJobsAssigned);
-        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnSpawnComplete);
+        //GangRuleSys.PlayerSpawned (sees no gang role, do nothing) -> AntagSelectionSys.PlayerSpaned (sends briefing)  ((this avoids double briefing))
+        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(
+            OnSpawnComplete,
+            null,
+            new[] { typeof(GangRuleSystem) });
     }
 
     private void OnTakeGhostRole(Entity<GhostRoleAntagSpawnerComponent> ent, ref TakeGhostRoleEvent args)
