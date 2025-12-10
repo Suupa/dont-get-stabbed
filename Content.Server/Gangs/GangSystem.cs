@@ -21,8 +21,6 @@ public sealed class GangSystem : SharedGangSystem
     [Dependency] private readonly MindSystem _mind = default!;
     [Dependency] private readonly RoleSystem _role = default!;
 
-    private static readonly Random Rnd = new();
-
     public override void Initialize()
     {
         base.Initialize();
@@ -100,15 +98,13 @@ public sealed class GangSystem : SharedGangSystem
         return _role.MindHasRole<ShotCallerRoleComponent>(mindId, out _);
     }
 
-    public EntityUid GetShotCallerOfInmate(EntityUid inmate)
+    public EntityUid? GetShotCallerOfInmate(EntityUid inmate)
     {
         if (!TryComp<InmateComponent>(inmate, out var comp))
             throw new ArgumentException($"{inmate} is not an inmate.");
 
         var shotCaller = GetShotCallerOfCar(comp.Car);
-        if(shotCaller == null)
-            throw new Exception($"car {comp.Car.ID} has no Shot Caller");
-        return  shotCaller.Value;
+        return  shotCaller;
     }
 
     public EntityUid? GetShotCallerOfGang(GangPrototype gang)

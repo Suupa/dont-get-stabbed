@@ -13,7 +13,7 @@ gangs-nicknames-bgf = BGF
 gangs-nicknames-black-gorilla-family = Black Gorilla Family
 gangs-nicknames-black-family = Black Family
 
-gangs-the-leader = the leader
+gangs-the-leader = the Shot Caller
 gangs-a-member = a member
 
 

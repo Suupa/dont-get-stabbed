@@ -125,6 +125,19 @@ internal sealed partial class ChatManager : IChatManager
             _adminLogger.Add(LogType.Chat, LogImpact.Low, $"Server message to {player:Player}: {message}");
     }
 
+    public void DispatchServerMessageColored(ICommonSession session, string message)
+    {
+        var wrappedMsg = Loc.GetString("chat-manager-server-wrap-message", ("message", message));
+
+        ChatMessageToOne(
+            Content.Shared.Chat.ChatChannel.Server,
+            message,
+            wrappedMsg,
+            default,
+            false,
+            session.Channel);
+    }
+
     public void SendAdminAnnouncement(string message, AdminFlags? flagBlacklist, AdminFlags? flagWhitelist)
     {
         var clients = _adminManager.ActiveAdmins.Where(p =>

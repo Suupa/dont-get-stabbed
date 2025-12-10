@@ -53,6 +53,4 @@ public sealed class SharedInmateSystem : EntitySystem
         var r2 = rnd.Next(cars.Count);
         comp.Car = cars.ElementAt(r2);
     }
-
-
 }

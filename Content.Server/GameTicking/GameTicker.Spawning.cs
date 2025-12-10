@@ -305,7 +305,8 @@ namespace Content.Server.GameTicking
             if (Comp<StationJobsComponent>(station).ExtendedAccess
                 && (jobPrototype.ExtendedAccess.Count > 0 || jobPrototype.ExtendedAccessGroups.Count > 0))
             {
-                _chatManager.DispatchServerMessage(player, Loc.GetString("job-greet-crew-shortages"));
+                //might be useful in the future, but don't notify of low pop for now
+                //_chatManager.DispatchServerMessage(player, Loc.GetString("job-greet-crew-shortages"));
             }
 
             if (!silent && TryComp(station, out MetaDataComponent? metaData))

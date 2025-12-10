@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using Content.Server.Antag;
 using Content.Server.Chat.Managers;
+using Content.Server.Gangs;
 using Content.Shared.GameTicking;
 using Content.Shared.Mind;
 using Content.Shared.Roles;
@@ -17,7 +18,9 @@ public sealed class JobSystem : SharedJobSystem
     [Dependency] private readonly IChatManager _chat = default!;
     [Dependency] private readonly ISharedPlayerManager _player = default!;
     [Dependency] private readonly RoleSystem _roles = default!;
-    [Dependency] private readonly SharedMindSystem _mind = default!;
+    [Dependency] private readonly SharedMindSystem _mind = default!;//TODO probably shouldn't be shared
+    [Dependency] private readonly SharedInmateSystem _inmate = default!;//TODO probably shouldn't be shared
+    [Dependency] private readonly GangSystem _gang = default!;
 
     public override void Initialize()
     {
@@ -55,14 +58,43 @@ public sealed class JobSystem : SharedJobSystem
         // "Your role is: {jobName}" chat line to avoid confusing/duplicate messages
         if (!_roles.MindIsExclusiveAntagonist(mindId))
         {
-            _chat.DispatchServerMessage(session, Loc.GetString("job-greet-introduce-job-name",
-                ("jobName", CultureInfo.CurrentCulture.TextInfo.ToTitleCase(job.LocalizedName))));
+            //unique message for inmates
+            if (job.ID == "Inmate" && component.OwnedEntity is { } mob)
+            {
+                var car = _inmate.GetInmatesCar(mob);
+                if (car != null && component.OwnedEntity is { } mob2)
+                {
+                    var shotCaller = _gang.GetShotCallerOfInmate(mob2);
+                    var shotCallerName = Exists(shotCaller) ? MetaData(shotCaller.Value).EntityName : "Unknown";
+
+                    var msg = Loc.GetString("job-greet-inmate-introduce-job-name",
+                        ("car", Loc.GetString(car.Name)),
+                        ("shotCaller", shotCallerName)
+                        );
+
+                    _chat.DispatchServerMessageColored(session, msg);
+                }
+            }
+            else
+            {
+                _chat.DispatchServerMessage(session, Loc.GetString("job-greet-introduce-job-name",
+                    ("jobName", CultureInfo.CurrentCulture.TextInfo.ToTitleCase(job.LocalizedName))));
+            }
         }
 
         if (job.RequireAdminNotify)
             _chat.DispatchServerMessage(session, Loc.GetString("job-greet-important-disconnect-admin-notify"));
 
-        _chat.DispatchServerMessage(session, Loc.GetString("job-greet-supervisors-warning", ("jobName", job.LocalizedName), ("supervisors", Loc.GetString(job.Supervisors))));
+
+        if (job.ID == "Inmate")
+        {
+            //unique message for inmates
+            _chat.DispatchServerMessageColored(session, Loc.GetString("job-greet-inmate-warning"));
+        }
+        else
+        {
+            _chat.DispatchServerMessage(session, Loc.GetString("job-greet-supervisors-warning", ("jobName", job.LocalizedName), ("supervisors", Loc.GetString(job.Supervisors))));
+        }
     }
 
     private void SendJobGreetingIfAllowed(EntityUid mindId)

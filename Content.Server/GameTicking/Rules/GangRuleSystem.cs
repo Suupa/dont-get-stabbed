@@ -92,9 +92,6 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
             var rank = Loc.GetString(isShotCaller ? "gangs-the-leader" : "gangs-a-member");
             var gangName = Loc.GetString(gangMemberRole.Gang.Name);
 
-            var r = Rnd.Next(gangMemberRole.Gang.Nicknames.Count);
-            var gangNickname = Loc.GetString(gangMemberRole.Gang.Nicknames.ElementAt(r));
-
             briefing += Loc.GetString("gangmember-role-greeting-intro",
                 ("rank", rank),
                 ("gangName", gangName)
@@ -108,14 +105,15 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
                 var carName = car != null ? Loc.GetString(car.Name) : "Unknown";
 
                 briefing += Loc.GetString("gangmember-role-greeting-shotcaller",
-                    ("car", carName),
-                    ("gangNickname", gangNickname)
+                    ("car", carName)
                 );
             }
             else
             {
                 var shotCaller = _gang.GetShotCallerOfInmate(ent);
-                var shotCallerName = MetaData(shotCaller).EntityName;
+                if (shotCaller == null)
+                    throw new Exception($"{ent} is a Gang Member, but belongs to a Car ({_inmate.GetInmatesCar(ent)?.ID}) without a Shot Caller. If there is no Shot Caller, he should be it!");
+                var shotCallerName = MetaData(shotCaller.Value).EntityName;
 
                 briefing += Loc.GetString("gangmember-role-greeting-member",
                     ("shotCallerName", shotCallerName),

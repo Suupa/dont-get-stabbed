@@ -2,7 +2,7 @@ gangmember-role-greeting-intro =
     You are are {$rank} of [color=#746694]{THE($gangName)}[/color].
 
 gangmember-role-greeting-shotcaller =
-    You are the Shot Caller of your gang and hold the keys to your car [color=#746694]({THE($car)})[/color]. You dictate rules for your car and are first in command within { $gangNickname }.
+    You hold the keys to [color=#746694]{THE($car)}[/color].
 
 gangmember-role-greeting-member =
     You answer to your Shot Caller { $shotCallerName } and must follow all { $gangName } rules.
