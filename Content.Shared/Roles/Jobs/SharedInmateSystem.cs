@@ -25,7 +25,7 @@ public sealed class SharedInmateSystem : EntitySystem
         base.Initialize();
         _cars = _prototype.EnumeratePrototypes<CarPrototype>().ToList();
 
-        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnPlayerSpawned);
+        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnPlayerSpawned, [typeof(SharedGangSystem)], null);
     }
 
     public CarPrototype? GetInmatesCar(EntityUid inmate)
@@ -47,7 +47,11 @@ public sealed class SharedInmateSystem : EntitySystem
             return;
 
         var comp = EnsureComp<InmateComponent>(ev.Mob);
+        AssignCar(comp);
+    }
 
+    private void AssignCar(InmateComponent comp)
+    {
         //TODO make car depended on race instead of random (later there should be exceptions, but start out with simpler version)
         var cars = GetAllCars();
         var r2 = rnd.Next(cars.Count);

@@ -47,7 +47,7 @@ public sealed class GangSystem : SharedGangSystem
             return;
 
         var mob = mind.OwnedEntity.Value;
-        AssignGang(mob, roleEnt.Value.Owner, roleEnt.Value.Comp2);
+        AssignGangIfNeeded(mob, roleEnt.Value.Owner, roleEnt.Value.Comp2);
     }
 
     private void OnPlayerSpawned(PlayerSpawnCompleteEvent ev)
@@ -60,10 +60,10 @@ public sealed class GangSystem : SharedGangSystem
             return;
 
         // Otherwise assign gang (if not already done)
-        AssignGang(ev.Mob, roleEnt.Value.Owner, roleEnt.Value.Comp2);
+        AssignGangIfNeeded(ev.Mob, roleEnt.Value.Owner, roleEnt.Value.Comp2);
     }
 
-    private void AssignGang(EntityUid mob, EntityUid roleUid, GangMemberRoleComponent gangMemberComp)
+    private void AssignGangIfNeeded(EntityUid mob, EntityUid roleUid, GangMemberRoleComponent gangMemberComp)
     {
         // skip if already assigned
         if (gangMemberComp.Gang != null)

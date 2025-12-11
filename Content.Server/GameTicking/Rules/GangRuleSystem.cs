@@ -18,8 +18,6 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
     [Dependency] private readonly RoleSystem _roleSystem = default!;
     [Dependency] private readonly MindSystem _mind = default!;
 
-    private static readonly Random Rnd = new();
-
     public override void Initialize()
     {
         base.Initialize();
@@ -28,43 +26,42 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
         SubscribeLocalEvent<GangMemberRoleComponent, GetBriefingEvent>(OnGetBriefing);
 
         //run after GangSystem so that the gang is assigned before making a briefing
-        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnPlayerSpawned, null, new[] {typeof(GangSystem)});
+        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnPlayerSpawned, null, [typeof(SharedInmateSystem),typeof(GangSystem)]);
     }
 
-    // two mutually exclusive timing paths:
-    // 1) gangMember role assigned before/during spawn (round-start antag):
-    // AfterAntagEntitySelected->_roleSystem.MindAddRole(... "MindRoleGangMember")->OnPlayerSpawned->SendBriefing
-    // 2) role assigned after spawn (late join / late antag grant):
-    // OnPlayerSpawned (no GangMember role so exits)->AfterAntagEntitySelected (adds role)->SendBriefing
-    // so SendBriefing always gets called exactly once
-
+    //Antag selection can run BEFORE or AFTER the player spawns (late join) so both paths have to work
     private void AfterAntagSelected(Entity<GangRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)
     {
         var mob = args.EntityUid;
         if (!_mind.TryGetMind(mob, out var mindId, out var mindComp))
             return;
-        _roleSystem.MindAddRole(mindId, "MindRoleGangMember");
+        _roleSystem.MindAddRole(mindId, "MindRoleGangMember");//triggers GangSystem.OnRoleAdded
+        _gang.SetupGangMemberIfNeeded(mob);
 
-        // if the player is already spawned, send the briefing
-        if (mindComp.OwnedEntity.HasValue)
+        if (mindComp.OwnedEntity.HasValue)//if player is spawned
         {
-            // the role was just added, which triggers GangSystem.OnRoleAdded which assigns gang
+            //LATE JOIN
             _antag.SendBriefing(mindComp.OwnedEntity.Value, MakeBriefing(mindComp.OwnedEntity.Value), null, null);
         }
-        // otherwise OnPlayerSpawned will call SendBriefing when the player spawns
+        // else ROUND START JOIN
+        // let OnPlayerSpawned handle Briefing
     }
 
-    // GangSystem.OnPlayerSpawned runs first so gangs are assigned
     private void OnPlayerSpawned(PlayerSpawnCompleteEvent ev)
     {
         if (!_mind.TryGetMind(ev.Mob, out var mindId, out _))
             return;
 
-        var hasGangRole = _roleSystem.MindHasRole<GangMemberRoleComponent>(mindId, out _);
-        if (!hasGangRole)
-            return;
-
-        _antag.SendBriefing(ev.Mob, MakeBriefing(ev.Mob), null, null);
+        if (_roleSystem.MindHasRole<GangMemberRoleComponent>(mindId, out _))
+        {
+            //ROUND START JOIN
+            // AfterAntagSelected has run and has set up gangmember (SetupGangMemberIfNeeded)
+            // but didn't send Briefing because player had not spawned yet at that point
+            // This means Gang Member is set up and we can send Briefing now
+            _antag.SendBriefing(ev.Mob, MakeBriefing(ev.Mob), null, null);
+        }
+        //else LATE JOIN
+        //let AfterAntagSelected handle the Briefing
     }
 
     private void OnGetBriefing(Entity<GangMemberRoleComponent> role, ref GetBriefingEvent args)
