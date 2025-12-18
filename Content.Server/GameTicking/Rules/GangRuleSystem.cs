@@ -36,7 +36,6 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
         if (!_mind.TryGetMind(mob, out var mindId, out var mindComp))
             return;
         _roleSystem.MindAddRole(mindId, "MindRoleGangMember");//triggers GangSystem.OnRoleAdded
-        _gang.SetupGangMemberIfNeeded(mob);
 
         if (mindComp.OwnedEntity.HasValue)//if player is spawned
         {
@@ -70,7 +69,7 @@ public sealed class GangRuleSystem : GameRuleSystem<GangRuleComponent>
 
         if (ent is null)
             return;
-        args.Append(MakeBriefing(ent.Value));
+        args.Briefing = MakeBriefing(ent.Value);//TODO check if should be args.Append instead
     }
 
     private string MakeBriefing(EntityUid ent)

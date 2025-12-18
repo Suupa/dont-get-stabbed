@@ -26,6 +26,7 @@ public sealed class SharedInmateSystem : EntitySystem
         _cars = _prototype.EnumeratePrototypes<CarPrototype>().ToList();
 
         SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnPlayerSpawned, [typeof(SharedGangSystem)], null);
+        SubscribeLocalEvent<RoleAddedEvent>(OnRoleAdded);
     }
 
     public CarPrototype? GetInmatesCar(EntityUid inmate)
@@ -47,6 +48,20 @@ public sealed class SharedInmateSystem : EntitySystem
             return;
 
         var comp = EnsureComp<InmateComponent>(ev.Mob);
+        AssignCar(comp);
+    }
+
+    private void OnRoleAdded(RoleAddedEvent args)
+    {
+        // Only care once the Mind has a mob.
+        if (args.Mind.OwnedEntity is not { } mob)
+            return;
+
+        //and is inmate without an InmateComp
+        if (!_job.MindHasJobWithId(args.MindId, "Inmate") && !TryComp<InmateComponent>(mob, out _))
+            return;
+
+        var comp = EnsureComp<InmateComponent>(mob);
         AssignCar(comp);
     }
 
